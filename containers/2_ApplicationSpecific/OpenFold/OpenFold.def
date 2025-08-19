@@ -1,0 +1,97 @@
+Bootstrap: docker
+From: nvidia/cuda:12.6.3-base-ubuntu24.04
+
+%labels
+  org.opencontainers.image.authors OpenFold Team
+  org.opencontainers.image.source https://github.com/aqlaboratory/openfold
+  org.opencontainers.image.licenses Apache License 2.0
+  org.opencontainers.image.base.name docker.io/nvidia/cuda:12.6.3-base-ubuntu24.04
+
+%files
+  environment.yml /opt/openfold/environment.yml
+
+%post
+  # Set the timezone, if unset
+  test -h /etc/localtime || ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+
+  cp /etc/apt/sources.list /etc/apt/sources.list~
+  sed -E -i 's/^# deb-src /deb-src /' /etc/apt/sources.list
+  apt-get -y update
+
+  # Install man & man pages - this section can be removed if not needed
+  # NOTE: Do this before installing anything else so their man pages are installed
+  sed -e '\|/usr/share/man|s|^#*|#|g' -i /etc/dpkg/dpkg.cfg.d/excludes
+  DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils groff dialog man-db manpages manpages-posix manpages-dev
+  rm -f /usr/bin/man
+  dpkg-divert --quiet --remove --rename /usr/bin/man
+
+  # O/S package updates:
+  DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+
+  DEBIAN_FRONTEND=noninteractive apt-get -y install \
+   tzdata \
+   locales \
+   unzip \
+   wget \
+   git \
+   curl \
+   jq \
+   nano \
+   vim \
+   apt-file
+
+  # NOTE: apt-file is generally not needed to run, but can be useful during development
+  apt-file update
+
+  # These steps are necessary to configure Perl and can cause issues with Python if omitted
+  sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+  dpkg-reconfigure --frontend=noninteractive locales
+  update-locale LANG=en_US.UTF-8
+
+  # use all the available cores for cmake parallel builds
+  export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+
+  # Following build based on the Dockerfile
+
+  # set up Miniforge
+  miniforge_version="23.3.1-1"
+  #miniforge_version="25.3.0-3"
+  wget -P /tmp \
+   "https://github.com/conda-forge/miniforge/releases/download/${miniforge_version}/Miniforge3-$(uname)-$(uname -m).sh"
+  bash /tmp/Miniforge3-$(uname)-$(uname -m).sh -b -p /opt/conda
+  rm /tmp/Miniforge3-$(uname)-$(uname -m).sh
+
+  export CONDA_PREFIX="/opt/conda"
+  export PATH=/opt/conda/bin:$PATH
+  cd /opt/conda
+  mamba env update -n base --file /opt/openfold/environment.yml
+  mamba clean --all
+  export LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
+  cd /root
+  git clone https://github.com/aqlaboratory/openfold.git
+  cd openfold
+  cp -r openfold /opt/openfold/openfold
+  cp -r scripts /opt/openfold/scripts
+  # Note: Copying the "tests" dir is only required to run the test script
+  #         bash /opt/openfold/scripts/run_unit_tests.sh -v tests.test_model
+  #       This can be omitted if not running this test:
+  cp -r tests /opt/openfold/tests
+  cp run_pretrained_openfold.py /opt/openfold/run_pretrained_openfold.py
+  cp train_openfold.py /opt/openfold/train_openfold.py
+  cp setup.py /opt/openfold/setup.py
+  cd ..
+  rm -rf openfold
+  cd /opt/openfold
+  wget -q -P /opt/openfold/openfold/resources \
+    https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
+  python3 setup.py install
+
+%environment
+  export LANG=en_US.UTF-8 
+  export LD_LIBRARY_PATH="/opt/conda/lib:/usr/local/lib:${LD_LIBRARY_PATH}"
+  export PYTHONPATH="/opt/conda/lib/python3.10/site-packages:/opt/openfold:${PYTHONPATH}"
+  export PATH="/opt/conda/bin:/opt/openfold:${PATH}"
+  export CONDA_PREFIX="/opt/conda"
+  export OF_DIR="/opt/openfold"
+  export TRITON_CACHE_DIR="${SLURMTMPDIR:-$(test -d /scratch && echo "/scratch" || echo "/var/tmp")}"
+
