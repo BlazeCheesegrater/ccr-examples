@@ -10,6 +10,7 @@
 #SBATCH --cluster="ub-hpc"
 #SBATCH --partition="arm64"
 #SBATCH --qos="arm64"
+#SBATCH --export=HOME,TERM,SHELL
 ## Grace Hopper GH200 GPU
 #SBATCH --constraint="GH200"
 
