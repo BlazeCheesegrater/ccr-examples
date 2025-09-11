@@ -271,7 +271,7 @@ Start an interactive job with more than one GPU e.g.
 
 ```
 salloc --cluster=ub-hpc --account="[SlurmAccountName]" \
- --partition=industry-dgx --qos=industry-dgx --mem=128GB --nodes=1 \
+ --partition=industry-dgx --qos=industry --mem=128GB --nodes=1 \
  --gpus-per-node=8 --mem=0 --exclusive --time=3-00:00:00
 ```
 
