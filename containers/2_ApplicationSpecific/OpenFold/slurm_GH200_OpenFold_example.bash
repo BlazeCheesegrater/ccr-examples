@@ -89,11 +89,12 @@ python3 "${OF_DIR}/run_pretrained_openfold.py" \
  "${SLURMTMPDIR}/examples/monomer/fasta_dir" \
  "/data/pdb_data/mmcif_files"
 
-echo
 if [ "$?" = "0" ]
 then
+  echo
   echo "Model inference with pre-computed alignments completed"
 else
+  echo
   echo "Model inference with pre-computed alignments FAILED!" >&2
 fi
 
