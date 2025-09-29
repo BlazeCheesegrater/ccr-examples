@@ -18,6 +18,7 @@ Please refer to CCR's [container documentation](https://docs.ccr.buffalo.edu/en/
 | [OpenFF-Toolkit](./Open_Force_Field_toolkit)  | Open Force Field toolkit container with steps for building and running via Apptainer |
 | [Micro-C](./Micro-C)                 | Micro-C Pipeline container with steps for building and running via Apptainer |
 | [OpenSees](./OpenSees)               | OpenSees container with steps for building and running via Apptainer |
+| [Seurat](./seurat)                   | Seurat container with example scRNA analysis |
 
 ## Additional Information
 
