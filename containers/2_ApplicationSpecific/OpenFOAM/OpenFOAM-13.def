@@ -1,0 +1,146 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+%post
+  # Set the timezone, if unset
+  test -h /etc/localtime || ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+
+  cp /etc/apt/sources.list /etc/apt/sources.list~
+  sed -E -i 's/^# deb-src /deb-src /' /etc/apt/sources.list
+  apt-get -y update
+
+  # Install man & man pages - this section can be removed if not needed
+  # NOTE: Do this before installing anything else so their man pages are installed
+  sed -e '\|/usr/share/man|s|^#*|#|g' -i /etc/dpkg/dpkg.cfg.d/excludes
+  DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils groff dialog man-db manpages manpages-posix manpages-dev
+  rm -f /usr/bin/man
+  dpkg-divert --quiet --remove --rename /usr/bin/man
+
+  # O/S package updates:
+  DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+
+  DEBIAN_FRONTEND=noninteractive apt-get -y install \
+   tzdata \
+   locales \
+   unzip \
+   wget \
+   git \
+   gawk \
+   build-essential \
+   autoconf \
+   automake \
+   pkg-config \
+   cmake \
+   cmake-data \
+   cmake-extras \
+   cmake-format \
+   python3 \
+   python3-pip \
+   python3-setuptools \
+   python3-sphinx \
+   python3-sphinx-rtd-theme \
+   python-is-python3 \
+   software-properties-common \
+   zstd \
+   gnulib \
+   libssl-dev \
+   zlib1g-dev \
+   libbz2-dev \
+   libncurses5-dev \
+   libncursesw5-dev \
+   liblzma-dev \
+   liblz4-tool \
+   libcurl4-gnutls-dev \
+   libdeflate-dev \
+   libhdf5-dev \
+   libhts3 \
+   libhts-dev \
+   libhtscodecs2 \
+   libhtscodecs-dev \
+   r-bioc-rhtslib \
+   libopenblas64-0 \
+   libopenblas64-dev \
+   liblapack3 \
+   liblapack-dev \
+   liblapacke-dev \
+   libscalapack-openmpi-dev \
+   openmpi-bin \
+   openmpi-common \
+   libopenmpi-dev \
+   libpmix2t64 \
+   libpmix-dev \
+   curl \
+   jq \
+   nano \
+   vim \
+   apt-file
+
+  # NOTE: apt-file is generally not needed to run, but can be useful during development
+  apt-file update
+
+  # No idea why these links don't exist by default!
+  cd /usr/lib/$(arch)-linux-gnu/
+  ln -s libopenblas64.a libopenblas.a
+  ln -s libopenblas64.so libopenblas.so
+  ln -s libopenblas64.so.0 libopenblas.so.0
+  cd ${HOME}
+
+  # These steps are necessary to configure Perl and can cause issues with Python if omitted
+  sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+  dpkg-reconfigure --frontend=noninteractive locales
+  update-locale LANG=en_US.UTF-8
+
+  # Install man & man pages - this section can be removed if not needed
+  sed -e '\|/usr/share/man|s|^#*|#|g' -i /etc/dpkg/dpkg.cfg.d/excludes
+  DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils dialog manpages manpages-posix man-db
+  rm -f /usr/bin/man
+  dpkg-divert --quiet --remove --rename /usr/bin/man
+
+  # Libraries in /usr/local/lib
+  # Include files in /usr/local/include
+  export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
+  export CFLAGS="${CFLAGS} -I/usr/local/include"
+  export CPPFLAGS="${CPPFLAGS} -I/usr/local/include"
+  export CXXFLAGS="${CXXFLAGS} -I/usr/local/include"
+  export FFLAGS="${FFLAGS} -I/usr/local/include"
+  export LDFLAGS="${LDFLAGS} -L/usr/local/lib -Wl,-rpath,/usr/local/lib"
+  export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+  pip_install_dir="$(python3 -c 'import sys; print("/usr/local/lib/python" + str(sys.version_info.major) + "." + str(sys.version_info.minor) + "/dist-packages")')"
+  export PYTHONPATH="${pip_install_dir}:${PYTHONPATH}"
+  export PATH="${PATH}:${pip_install_dir}/bin"
+
+  # add the OpenFOAM repo
+  wget -O /etc/apt/trusted.gpg.d/openfoam.asc https://dl.openfoam.org/gpg.key
+  add-apt-repository http://dl.openfoam.org/ubuntu
+
+  # add the "universe" repo
+  apt-add-repository universe
+
+  # Install OpenFOAM version 13 (from the OpenFOAM repo)
+  apt-get -y update && DEBIAN_FRONTEND=noninteractive apt-get -y install openfoam13
+
+  # Change the default directory for Job Control to a directory we can write to
+  sed -E -i '/^export[[:space:]]+FOAM_JOB_DIR/s|FOAM_JOB_DIR.*$|FOAM_JOB_DIR="${SLURMTMPDIR:-/var/tmp}/jobControl"|' /opt/openfoam13/etc/config.sh/settings
+  sed -E -i '/^setenv[[:space:]]+FOAM_JOB_DIR/s|^.*$|if ( "$SLURMTMPDIR" != "") then\n  setenv FOAM_JOB_DIR "$SLURMTMPDIR/jobControl"\nelse\n  setenv FOAM_JOB_DIR "/var/tmp/jobControl"\nendif|' /opt/openfoam13/etc/config.csh/settings
+
+  #############################################################################
+  # Change the following value to point to your project directory
+  #############################################################################
+  export FOAM_BASE_DIR="/projects/academic/[YourGroupName]"
+  #############################################################################
+
+  # change the default runtime directory from ${HOME}
+  sed -E -i "/^(setenv|export)[[:space:]]+WM_PROJECT_USER_DIR/s|\\\$HOME|${FOAM_BASE_DIR}|" /opt/openfoam13/etc/bashrc /opt/openfoam13/etc/cshrc 
+
+
+%environment
+  export LANG=en_US.UTF-8 
+  export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
+  export PYTHONPATH="$(python3 -c 'import sys; print("/usr/local/lib/python" + str(sys.version_info.major) + "." + str(sys.version_info.minor) + "/dist-packages")'):${PYTHONPATH}"
+  export PATH="${PATH}:$(python3 -c 'import sys; print("/usr/local/lib/python" + str(sys.version_info.major) + "." + str(sys.version_info.minor) + "/dist-packages/bin")')"
+  echo >&2
+  echo "Run the following to use OpenFOAM:" >&2
+  echo >&2
+  echo >&2
+  echo 'source /opt/openfoam13/etc/bashrc && mkdir -p "${FOAM_RUN}" "${FOAM_JOB_DIR}"'
+  echo >&2
