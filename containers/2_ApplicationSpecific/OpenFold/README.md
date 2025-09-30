@@ -97,10 +97,11 @@ Change to your OpenFold directory
 cd /projects/academic/[YourGroupName]/OpenFold
 ```
 
-Create an output directory
+Create an output directory, and an empty tuning directory for triton
 
 ```
 mkdir -p ./output
+mkdir -p ${HOME}/.triton/autotune
 ```
 
 ...then start the OpenFold container instance
