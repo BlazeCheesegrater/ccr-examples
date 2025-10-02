@@ -2,12 +2,12 @@
 
 ## Buid the ARM64 container image
 
-Start an interactive job on an ARM64 node
+Start an interactive job on an ARM64 node with a GPU
 
 ```
 tmp_file="$(mktemp)"
 salloc --partition=arm64 --qos=arm64 --constraint=ARM64 --no-shell \
- --exclusive --time=3:30:00 2>&1 | tee "${tmp_file}"
+ --gpus-per-node=1 --exclusive --time=3:30:00 2>&1 | tee "${tmp_file}"
 SLURM_JOB_ID="$(head -1 "${tmp_file}" | awk '{print $NF}')"
 rm "${tmp_file}"
 srun --jobid="${SLURM_JOB_ID}" --export=HOME,TERM,SHELL --pty /bin/bash --login
@@ -21,8 +21,21 @@ sample outout:
 > salloc: job 20812210 has been allocated resources
 > salloc: Granted job allocation 20812210
 > salloc: Waiting for resource configuration
-> salloc: Nodes cpn-v14-19 are ready for job
-> CCRusername@cpn-v14-19:~$
+> salloc: Nodes cpn-f06-36 are ready for job
+> CCRusername@cpn-f06-36:~$
+> ```
+
+Verify that a GPU has been allocated to the job (or the build will fail because
+the nvidia tools incluing "nvcc" will not be installed.)
+
+```
+nvidia-smi -L
+```
+
+sample output:
+
+> ````
+> GPU 0: NVIDIA GH200 480GB (UUID: GPU-3ec6f59a-0684-f162-69a0-8b7ebe27a8e3)
 > ```
 
 Change to your OpenFold directory
@@ -114,7 +127,7 @@ sample outout:
 > salloc: job 20815431 has been allocated resources
 > salloc: Granted job allocation 20815431
 > salloc: Waiting for resource configuration
-> salloc: Nodes cpn-v14-19 are ready for job
+> salloc: Nodes cpn-f06-36 are ready for job
 > ```
 
 Change to your OpenFold` directory
@@ -203,7 +216,7 @@ exit
 sample outout:
 
 > ```
-> CCRusername@cpn-v14-19$ 
+> CCRusername@cpn-f06-36$ 
 > ```
 
 End the Slurm job
