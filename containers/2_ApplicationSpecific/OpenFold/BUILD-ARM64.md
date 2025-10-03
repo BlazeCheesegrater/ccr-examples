@@ -7,7 +7,7 @@ Start an interactive job on an ARM64 node with a GPU
 ```
 tmp_file="$(mktemp)"
 salloc --partition=arm64 --qos=arm64 --constraint=ARM64 --no-shell \
- --gpus-per-node=1 --exclusive --time=3:30:00 2>&1 | tee "${tmp_file}"
+ --gpus-per-node=1 --exclusive --time=5:00:00 2>&1 | tee "${tmp_file}"
 SLURM_JOB_ID="$(head -1 "${tmp_file}" | awk '{print $NF}')"
 rm "${tmp_file}"
 srun --jobid="${SLURM_JOB_ID}" --export=HOME,TERM,SHELL --pty /bin/bash --login
