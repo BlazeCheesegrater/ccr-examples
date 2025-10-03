@@ -221,6 +221,18 @@ sample outout:
 > CCRusername@cpn-f06-36$ 
 > ```
 
+Exit the Slurm interactive session
+
+```
+exit
+```
+
+sample output:
+
+> ```
+> CCRusername@login1$ 
+> ```
+
 End the Slurm job
 
 ```
