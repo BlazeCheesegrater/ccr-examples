@@ -7,7 +7,8 @@ Start an interactive job on an ARM64 node with a GPU
 ```
 tmp_file="$(mktemp)"
 salloc --partition=arm64 --qos=arm64 --constraint=ARM64 --no-shell \
- --gpus-per-node=1 --exclusive --time=5:00:00 2>&1 | tee "${tmp_file}"
+ --account="[SlurmAccountName]" --gpus-per-node=1 --exclusive \
+ --time=5:00:00 2>&1 | tee "${tmp_file}"
 SLURM_JOB_ID="$(head -1 "${tmp_file}" | awk '{print $NF}')"
 rm "${tmp_file}"
 srun --jobid="${SLURM_JOB_ID}" --export=HOME,TERM,SHELL --pty /bin/bash --login
@@ -112,8 +113,9 @@ Start an interactive job on a node with a Grace Hopper GPU e.g.
 ```
 tmp_file="$(mktemp)"
 salloc --partition=arm64 --qos=arm64 --constraint=ARM64 --no-shell \
- --time=1:00:00  --nodes=1 --tasks-per-node=1 --cpus-per-task=4 \
- --gpus-per-node=1 --constraint="GH200" --mem=90G 2>&1 | tee "${tmp_file}"
+ --account="[SlurmAccountName]" --time=01:00:00  --nodes=1 --tasks-per-node=1 \
+ --cpus-per-task=4 --gpus-per-node=1 --constraint="GH200" \
+ --mem=90G 2>&1 | tee "${tmp_file}"
 SLURM_JOB_ID="$(head -1 "${tmp_file}" | awk '{print $NF}')"
 rm "${tmp_file}"
 srun --jobid="${SLURM_JOB_ID}" --export=HOME,TERM,SHELL --pty /bin/bash --login
