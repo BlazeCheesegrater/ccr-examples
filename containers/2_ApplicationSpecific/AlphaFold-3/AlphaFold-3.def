@@ -1,0 +1,211 @@
+Bootstrap: docker
+From: nvidia/cuda:12.6.3-base-ubuntu24.04
+
+%post
+  # Set the timezone, if unset
+  test -h /etc/localtime || ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+
+  cp /etc/apt/sources.list /etc/apt/sources.list~
+  sed -E -i 's/^# deb-src /deb-src /' /etc/apt/sources.list
+  apt-get -y update
+
+  # Install man & man pages - this section can be removed if not needed
+  # NOTE: Do this before installing anything else so their man pages are installed
+  sed -e '\|/usr/share/man|s|^#*|#|g' -i /etc/dpkg/dpkg.cfg.d/excludes
+  DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils groff dialog man-db manpages manpages-posix manpages-dev
+  rm -f /usr/bin/man
+  dpkg-divert --quiet --remove --rename /usr/bin/man
+
+  # O/S package updates:
+  DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+
+  DEBIAN_FRONTEND=noninteractive apt-get -y install \
+   tzdata \
+   locales \
+   unzip \
+   wget \
+   git \
+   gawk \
+   build-essential \
+   autoconf \
+   automake \
+   pkg-config \
+   cmake \
+   cmake-data \
+   cmake-extras \
+   cmake-format \
+   python3 \
+   python3-pip \
+   python3-setuptools \
+   python3-sphinx \
+   python3-sphinx-rtd-theme \
+   python3-dev \
+   python-is-python3 \
+   zstd \
+   gnulib \
+   libssl-dev \
+   zlib1g-dev \
+   libbz2-dev \
+   libncurses5-dev \
+   libncursesw5-dev \
+   liblzma-dev \
+   liblz4-tool \
+   libcurl4-gnutls-dev \
+   libdeflate-dev \
+   curl \
+   jq \
+   nano \
+   vim \
+   apt-file
+
+  # NOTE: apt-file is generally not needed to run, but can be useful during development
+  apt-file update
+
+  # These steps are necessary to configure Perl and can cause issues with Python if omitted
+  sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+  dpkg-reconfigure --frontend=noninteractive locales
+  update-locale LANG=en_US.UTF-8
+
+  # Libraries in /usr/local/lib
+  # Include files in /usr/local/include
+  export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
+  export CFLAGS="${CFLAGS} -I/usr/local/include"
+  export CPPFLAGS="${CPPFLAGS} -I/usr/local/include"
+  export CXXFLAGS="${CXXFLAGS} -I/usr/local/include"
+  export FFLAGS="${FFLAGS} -I/usr/local/include"
+  export LDFLAGS="${LDFLAGS} -L/usr/local/lib -Wl,-rpath,/usr/local/lib"
+  export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+  pip_install_dir="$(python3 -c 'import sys; print("/usr/local/lib/python" + str(sys.version_info.major) + "." + str(sys.version_info.minor) + "/dist-packages")')"
+  export PYTHONPATH="${pip_install_dir}:${PYTHONPATH}"
+  export PATH="${PATH}:${pip_install_dir}/bin"
+
+  # distro from the Ubuntu package clashes with the one from pip
+  DEBIAN_FRONTEND=noninteractive apt-get -y remove python3-distro
+  pip install --prefix="/usr" distro setuptools
+
+  # Following install based on the Dockerfile
+  pip3 install --prefix="/usr" --no-cache-dir --ignore-installed pip
+
+  # get the sources
+  mkdir /app
+  cd /app
+  git clone https://github.com/google-deepmind/alphafold3.git
+  mv alphafold3 alphafold
+
+  #
+  # HMMER install (specific version)
+  #
+  # set up path for HMMER
+  export PATH="/hmmer/bin:${PATH}"
+  mkdir /hmmer_build /hmmer
+  wget http://eddylab.org/software/hmmer/hmmer-3.4.tar.gz --directory-prefix /hmmer_build
+  cd /hmmer_build
+  echo "ca70d94fd0cf271bd7063423aabb116d42de533117343a9b27a65c17ff06fbf3 hmmer-3.4.tar.gz" | sha256sum --check
+  tar zxf hmmer-3.4.tar.gz && rm hmmer-3.4.tar.gz
+  patch -p0 < /app/alphafold/docker/jackhmmer_seq_limit.patch
+  cd ./hmmer-3.4
+  ./configure --prefix /hmmer
+  make -j$(nproc)
+  make install
+  cd ./easel
+  make install
+  cd && rm -R /hmmer_build
+
+  #
+  cd /app/alphafold
+  # There are no ARM64 binaries for triton so we have to build it:
+  if [ "$(arch)" = "aarch64" ]
+  then
+     # Install triton version 3.1.0 from source
+     triton_version="3.1.0"
+     #triton_version="3.3.1"
+     curl -L -o "triton-${triton_version}.tar.gz" "https://github.com/triton-lang/triton/archive/refs/tags/v${triton_version}.tar.gz"
+     gzip -dc "triton-${triton_version}.tar.gz" | tar xvf -
+     rm "triton-${triton_version}.tar.gz"
+     mv "triton-${triton_version}" "triton"
+     cd "triton"
+     # no python/requirements.txt in this tarball, so the following is based on
+     # the requirements.txt file from the latest github version:
+     pip install --prefix="/usr" --no-cache-dir "setuptools>=40.8.0" wheel "cmake>=3.20,<4.0" "ninja>=1.11.1" "pybind11>=2.13.1" lit
+     pip install --prefix="/usr" --no-cache-dir ./python
+     cd ..
+     rm -rf "triton"
+  fi
+  pip3 install --prefix="/usr" --no-cache-dir -r dev-requirements.txt
+  pip3 install --prefix="/usr" --no-cache-dir --no-deps .
+
+  # Build chemical components database (this binary was installed by pip).
+  build_data
+
+%environment
+  cd /app/alphafold
+  export LANG=en_US.UTF-8 
+  export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
+  export PYTHONPATH="$(python3 -c 'import sys; print("/usr/local/lib/python" + str(sys.version_info.major) + "." + str(sys.version_info.minor) + "/dist-packages")'):${PYTHONPATH}"
+  export PATH="/hmmer/bin:${PATH}:$(python3 -c 'import sys; print("/usr/local/lib/python" + str(sys.version_info.major) + "." + str(sys.version_info.minor) + "/dist-packages/bin")')"
+  echo
+  if ! which nvidia-smi >/dev/null 2>&1
+  then
+    # Running on an non GPU node for a Data Pipeline only run
+    echo "No GPU detected - run Data Pipeline only"
+    echo
+  else
+    # Set GPU related environment variables
+    if [ $(LD_LIBRARY_PATH=/.singularity.d/libs nvidia-smi --query-gpu=compute_cap --format=csv,noheader | sed -n '1p' | cut -f1 -d.) -ge 8 ]
+    then
+      #
+      # GPU is an Ampere or newer i.e. compute capability 8 or greater
+      #
+      # To work around a known XLA issue causing the compilation time to greatly
+      # increase, the following environment variable setting XLA flags must be
+      # enabled when running AlphaFold 3:
+      echo "# Setting environment variable XLA_FLAGS to work around a known XLA issue that"
+      echo "# will greatly increase compilation time"
+      echo
+      echo "export XLA_FLAGS=\"--xla_gpu_enable_triton_gemm=false\""
+      export XLA_FLAGS="--xla_gpu_enable_triton_gemm=false"
+    else
+      # If using CUDA capability 7 GPUs, it is necessary to set the following
+      # XLA_FLAGS value instead:
+      #   export XLA_FLAGS="--xla_disable_hlo_passes=custom-kernel-fusion-rewriter"
+      # (no need to disable gemm in that case as it is not supported for such GPUs).
+      echo
+      echo "# Running on a GPU with a compute capability less than 8"
+      echo "# i.e. this GPU predates the Ampere GPUs"
+      echo "# Setting environment variable XLA_FLAGS to use this GPU"
+      echo
+      echo "export XLA_FLAGS=\"--xla_disable_hlo_passes=custom-kernel-fusion-rewriter\""
+      export XLA_FLAGS="--xla_disable_hlo_passes=custom-kernel-fusion-rewriter"
+      echo
+      echo "# You must also add the \"--flash_attention_implementation=xla\" to" 
+      echo "# /app/alphafold/run_alphafold.py for this GPU to work:"
+      echo
+      echo "export ALPHAFOLD3_EXTRA_OPTIONS=\"--flash_attention_implementation=xla\""
+      export ALPHAFOLD3_EXTRA_OPTIONS="--flash_attention_implementation=xla"
+    fi
+    echo
+    # For GPUs with 80GB or RAM or more (6.25% RAM may be used for ECC)
+    # preallocate 95% of the memory
+    if [ $(LD_LIBRARY_PATH=/.singularity.d/libs nvidia-smi --query-gpu=memory.total --format=csv,noheader | sed -n '1p' | awk '{print $1}') -ge 75000 ]
+    then
+      # Memory settings used for folding up to 5,120 tokens on A100 80GB.
+      echo "# Setting environment variables for folding up to 5,120 tokens on A100 80GB"
+      echo
+      echo "export XLA_PYTHON_CLIENT_PREALLOCATE=\"true\""
+      export XLA_PYTHON_CLIENT_PREALLOCATE="true"
+      echo "export XLA_CLIENT_MEM_FRACTION=\"0.95\""
+      export XLA_CLIENT_MEM_FRACTION="0.95"
+    else
+      # To run structures exceeding 5,120 tokens or to use GPUs with less memory
+      # e.g., A100 40GB
+      echo "# Setting environment variables for a GPU with less than 80GB RAM"
+      echo
+      echo "export XLA_PYTHON_CLIENT_PREALLOCATE=\"false\""
+      export XLA_PYTHON_CLIENT_PREALLOCATE="false"
+      echo "export TF_FORCE_UNIFIED_MEMORY=\"true\""
+      export TF_FORCE_UNIFIED_MEMORY="true"
+      echo "export XLA_CLIENT_MEM_FRACTION=\"3.2\""
+      export XLA_CLIENT_MEM_FRACTION="3.2"
+    fi
+    echo
+  fi
