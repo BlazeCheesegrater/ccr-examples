@@ -5,10 +5,13 @@
 Start an interactive job on an ARM64 node with a GPU
 
 ```
+export SBATCH_ACCOUNT="[SlurmAccountName]"
+```
+
+```
 tmp_file="$(mktemp)"
 salloc --partition=arm64 --qos=arm64 --constraint=ARM64 --no-shell \
- --account="[SlurmAccountName]" --gpus-per-node=1 --exclusive \
- --time=5:00:00 2>&1 | tee "${tmp_file}"
+ --gpus-per-node=1 --exclusive --time=5:00:00 2>&1 | tee "${tmp_file}"
 SLURM_JOB_ID="$(head -1 "${tmp_file}" | awk '{print $NF}')"
 rm "${tmp_file}"
 srun --jobid="${SLURM_JOB_ID}" --export=HOME,TERM,SHELL --pty /bin/bash --login
@@ -75,7 +78,8 @@ Build your container
 Note: Building the OpenFold container takes about three hours
 
 ```
-apptainer build OpenFold-$(arch).sif OpenFold-aarch64.def
+apptainer build --build-arg SLURMTMPDIR="${SLURMTMPDIR}" -B /scratch:/scratch \
+ OpenFold-$(arch).sif OpenFold-aarch64.def
 ```
 
 sample truncated output:

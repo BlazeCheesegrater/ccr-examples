@@ -68,7 +68,8 @@ export APPTAINER_CACHEDIR=${SLURMTMPDIR}
 Building the OpenFold container takes about half an hour...
 
 ```
-apptainer build OpenFold-$(arch).sif OpenFold.def
+apptainer build --build-arg SLURMTMPDIR="${SLURMTMPDIR}" -B /scratch:/scratch \
+ OpenFold-$(arch).sif OpenFold.def
 ```
 
 Sample truncated output:

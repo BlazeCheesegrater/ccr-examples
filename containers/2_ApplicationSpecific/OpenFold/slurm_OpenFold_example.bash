@@ -38,7 +38,7 @@ mkdir -p ./output
 if [ "${APPTAINER_NAME}" = "" ]
 then
   # Launch the container with this script
-  exec apptainer exec \
+  exec apptainer run \
   -B /projects:/projects,/scratch:/scratch,/util:/util,/vscratch:/vscratch \
   -B /util/software/data/OpenFold:/data \
   -B /util/software/data/alphafold:/database \
