@@ -2,27 +2,14 @@ name: openfold-env
 channels:
   - conda-forge
   - bioconda
-  - pytorch
-  - nvidia 
 dependencies:
-  - cuda
-  - gcc=12.4
-  - python<3.11
-  - setuptools=59.5.0
-  - pip
+  - python=3.12
+  - setuptools<80
   - openmm
   - pdbfixer
-  - pytorch-lightning
   - biopython
-  - numpy=1.26.4
-  - pandas
-  - PyYAML
-  - requests
-  - scipy
-  - tqdm
-  - typing-extensions
   - wandb
-  - modelcif==0.7
+  - modelcif
   - awscli
   - ml-collections
   - aria2
@@ -31,6 +18,16 @@ dependencies:
   # install libopenblas as a fix for https://github.com/bioconda/bioconda-recipes/issues/56856
   - libopenblas
   - libaio
+  - ucx
   - bioconda::hhsuite
   - bioconda::kalign2
   - mmseqs2
+  # pytorch-lightning dependencies
+  - cpython
+  - cusparselt
+  - gmpy2
+  - mpc
+  - nccl
+  - nomkl
+  - sleef
+  - triton

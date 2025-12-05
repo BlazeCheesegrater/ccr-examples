@@ -9,7 +9,7 @@ From: ubuntu:24.04
 
 %setup
   # create mountpoint for /scratch during the build (for ${SLURMTMPDIR})
-  mkdir ${APPTAINER_ROOTFS}/scratch
+  mkdir "${APPTAINER_ROOTFS}/scratch"
 
 %files
   environment.yml /opt/openfold/environment.yml
@@ -62,6 +62,22 @@ From: ubuntu:24.04
 
   # Following build based on the Dockerfile
 
+  export CONDA_PREFIX="/opt/conda"
+  export CUDA_HOME="${CONDA_PREFIX}"
+  export CUDATOOLKIT_HOME="${CUDA_HOME}"
+  export CUDNN_HOME="${CUDA_HOME}"
+  uid="$(head -1 /proc/self/uid_map | awk '{print $2}')"
+  export TMPDIR="${SLURMTMPDIR:-/var/tmp}/tmp_${uid}"
+  mkdir -p "${TMPDIR}"
+  export CUDA_CACHE_PATH="${TMPDIR}/cache/cuda"
+  mkdir -p "${CUDA_CACHE_PATH}"
+  export PIP_CACHE_DIR="${TMPDIR}/cache/pip"
+  mkdir -p "${PIP_CACHE_DIR}"
+  export CONDA_PKGS_DIRS="${TMPDIR}/cache/conda"
+  mkdir -p "${CONDA_PKGS_DIRS}"
+  export PATH=/opt/conda/bin:$PATH
+  export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
+
   # set up Miniforge
   miniforge_version="23.3.1-1"
   #miniforge_version="25.3.0-3"
@@ -70,20 +86,9 @@ From: ubuntu:24.04
   bash /tmp/Miniforge3-$(uname)-$(uname -m).sh -b -p /opt/conda
   rm /tmp/Miniforge3-$(uname)-$(uname -m).sh
 
-  export CONDA_PREFIX="/opt/conda"
-  export CUDA_HOME="${CONDA_PREFIX}"
-  uid="$(head -1 /proc/self/uid_map | awk '{print $2}')"
-  export TMPDIR="${SLURMTMPDIR:-/var/tmp}/tmp_${uid}"
-  mkdir -p "${TMPDIR}"
-  export CUDA_CACHE_PATH="${TMPDIR}/cache/cuda"
-  mkdir -p "${CUDA_CACHE_PATH}"
-  export PIP_CACHE_DIR="${TMPDIR}/cache/pip"
-  mkdir -p "${PIP_CACHE_DIR}"
-  export PATH=/opt/conda/bin:$PATH
   cd /opt/conda
   mamba env update -n base --file /opt/openfold/environment.yml
-  mamba clean --all
-  export LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
+  mamba clean --all -y
   # manually install flash-attn with --no-build-isolation
   pip install flash-attn --no-build-isolation
   cd /root
@@ -107,11 +112,12 @@ From: ubuntu:24.04
 
 %environment
   export LANG=en_US.UTF-8 
-  export LD_LIBRARY_PATH="/opt/conda/lib:/usr/local/lib:${LD_LIBRARY_PATH}"
-  export PYTHONPATH="/opt/conda/lib/python3.10/site-packages:/opt/openfold:${PYTHONPATH}"
-  export PATH="/opt/conda/bin:/opt/openfold:${PATH}"
   export CONDA_PREFIX="/opt/conda"
+  export CUDA_HOME="${CONDA_PREFIX}"
   export OF_DIR="/opt/openfold"
+  export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:/usr/local/lib:${LD_LIBRARY_PATH}"
+  export PYTHONPATH="${OF_DIR}:/opt/conda/lib/python3.10/site-packages:${PYTHONPATH}"
+  export PATH="${CONDA_PREFIX}/bin:${PATH}"
 
 %runscript
   #!/bin/bash
@@ -122,6 +128,8 @@ From: ubuntu:24.04
   mkdir -p "${CUDA_CACHE_PATH}"
   export PIP_CACHE_DIR="${TMPDIR}/cache/pip"
   mkdir -p "${PIP_CACHE_DIR}"
+  export CONDA_PKGS_DIRS="${TMPDIR}/cache/conda"
+  mkdir -p "${CONDA_PKGS_DIRS}"
   export TRITON_CACHE_DIR="${TMPDIR}/cache/triton"
   mkdir -p "${TRITON_CACHE_DIR}"
   # Exec passed command (required for Modal ENTRYPOINT compatibility)

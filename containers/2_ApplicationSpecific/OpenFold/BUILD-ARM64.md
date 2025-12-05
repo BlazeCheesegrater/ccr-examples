@@ -11,7 +11,7 @@ export SBATCH_ACCOUNT="[SlurmAccountName]"
 ```
 tmp_file="$(mktemp)"
 salloc --partition=arm64 --qos=arm64 --constraint=ARM64 --no-shell \
- --gpus-per-node=1 --exclusive --time=5:00:00 2>&1 | tee "${tmp_file}"
+ --gpus-per-node=1 --exclusive --time=1:00:00 2>&1 | tee "${tmp_file}"
 SLURM_JOB_ID="$(head -1 "${tmp_file}" | awk '{print $NF}')"
 rm "${tmp_file}"
 srun --jobid="${SLURM_JOB_ID}" --export=HOME,TERM,SHELL --pty /bin/bash --login
@@ -48,12 +48,6 @@ Change to your OpenFold directory
 cd /projects/academic/[YourGroupName]/OpenFold
 ```
 
-Then set the apptainer cache dir:
-
-```
-export APPTAINER_CACHEDIR=${SLURMTMPDIR}
-```
-
 Download the OpenFold ARM64 build files, OpenFold-aarch64.def and
 environment-aarch64.yml, to this directory
 
@@ -72,6 +66,12 @@ Sample output:
 >                                  Dload  Upload   Total   Spent    Left  Speed
 > 100   574  100   574    0     0   3128      0 --:--:-- --:--:-- --:--:--  3136
 > ```
+
+Set the apptainer cache dir:
+
+```
+export APPTAINER_CACHEDIR="${SLURMTMPDIR}"
+```
 
 Build your container
 
@@ -115,11 +115,14 @@ unset SLURM_JOB_ID
 Start an interactive job on a node with a Grace Hopper GPU e.g.
 
 ```
+export SBATCH_ACCOUNT="[SlurmAccountName]"
+```
+
+```
 tmp_file="$(mktemp)"
 salloc --partition=arm64 --qos=arm64 --constraint=ARM64 --no-shell \
- --account="[SlurmAccountName]" --time=01:00:00  --nodes=1 --tasks-per-node=1 \
- --cpus-per-task=4 --gpus-per-node=1 --constraint="GH200" \
- --mem=90G 2>&1 | tee "${tmp_file}"
+ --time=01:00:00  --nodes=1 --tasks-per-node=1 --cpus-per-task=4 \
+ --gpus-per-node=1 --constraint="GH200" --mem=90G 2>&1 | tee "${tmp_file}"
 SLURM_JOB_ID="$(head -1 "${tmp_file}" | awk '{print $NF}')"
 rm "${tmp_file}"
 srun --jobid="${SLURM_JOB_ID}" --export=HOME,TERM,SHELL --pty /bin/bash --login

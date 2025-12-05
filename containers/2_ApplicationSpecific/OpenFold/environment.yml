@@ -37,10 +37,13 @@ dependencies:
   - mmseqs2
   - pytorch::pytorch=2.5
   - pytorch::pytorch-cuda=12.4
+  - lightning
+  - torchvision
   - pip:
       - deepspeed==0.14.5
       - dm-tree==0.1.6
       - git+https://github.com/NVIDIA/dllogger.git
+      - jsonargparse[signatures]
       - einops
 # Have to mainually install flash-attn
 #      - flash-attn

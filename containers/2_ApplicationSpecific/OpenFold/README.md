@@ -62,7 +62,7 @@ Sample output:
 Set the apptainer cache dir:
 
 ```
-export APPTAINER_CACHEDIR=${SLURMTMPDIR}
+export APPTAINER_CACHEDIR="${SLURMTMPDIR}"
 ```
 
 Building the OpenFold container takes about half an hour...
