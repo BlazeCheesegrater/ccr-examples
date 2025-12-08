@@ -12,17 +12,18 @@ Be aware that the more specific you get when requesting resources on CCR's clust
 
 ## Placeholders
 
-Portions of the example batch scripts which must be changed for the script to function are referred to as placeholders and denoted by square brackets. Replace the following placeholders in your script with details specific to your use case before submitting your job.
+This repository uses placeholders denoted by square brackets for values that need to be customized. Replace the following placeholders with details specific to your use case before using any commands or examples.
 
 | Placeholder             | Options |
 |-------------------------|-------------------------------------------|
 | `[cluster]`             | ub-hpc, faculty |
 | `[partition]`           | general-compute, debug, industry, scavenger, ub-laser, [other available options](https://docs.ccr.buffalo.edu/en/latest/hpc/clusters/#ub-hpc-compute-cluster) |
 | `[qos]`                 | Typically the same as `[partition]` - refer to [CCR docs](https://docs.ccr.buffalo.edu/en/latest/hpc/jobs/#slurm-directives-partitions-qos) for more information. |
-| `[SlurmAccountName]`    | Use the `slimits` command to see what accounts you have access to. If not specified, your default account will be used.  |
-| `[CCRUserName]`             | Your CCR username |
-| `[JobID]`             | Slurm JobID |
-| `[YourGroupName]`             | The name of your group |
+| `[SlurmAccountName]`    | Use the `slimits` command to see what accounts you have access to. If not specified, your default account will be used. |
+| `[CCRUsername]`         | Your CCR username |
+| `[YourGroupName]`       | Your project's group name (often PI username or company name) |
+| `[JobID]`               | Slurm JobID |
+| `[NodeID]`              | Compute NodeID |
 
 ## Getting Started ([0_Introductory/](./0_Introductory/README.md))
 
