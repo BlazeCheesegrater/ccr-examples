@@ -20,6 +20,7 @@ Start the container
 
 ```
 apptainer shell \
+ --writable-tmpfs \
  -B /projects:/projects,/scratch:/scratch,/util:/util,/vscratch:/vscratch \
  -B /util/software/data/OpenFold:/data \
  -B /util/software/data/alphafold:/database \

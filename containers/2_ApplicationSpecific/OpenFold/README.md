@@ -68,7 +68,8 @@ export APPTAINER_CACHEDIR="${SLURMTMPDIR}"
 Building the OpenFold container takes about half an hour...
 
 ```
-apptainer build --build-arg SLURMTMPDIR="${SLURMTMPDIR}" -B /scratch:/scratch \
+apptainer build --build-arg SLURMTMPDIR="${SLURMTMPDIR}" \
+ --build-arg SLURM_NPROCS="${SLURM_NPROCS}" -B /scratch:/scratch \
  OpenFold-$(arch).sif OpenFold.def
 ```
 
@@ -109,6 +110,7 @@ mkdir -p ${HOME}/.triton/autotune
 
 ```
 apptainer shell \
+ --writable-tmpfs \
  -B /projects:/projects,/scratch:/scratch,/util:/util,/vscratch:/vscratch \
  -B /util/software/data/OpenFold:/data \
  -B /util/software/data/alphafold:/database \

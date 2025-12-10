@@ -78,7 +78,8 @@ Build your container
 Note: Building the OpenFold container takes about three hours
 
 ```
-apptainer build --build-arg SLURMTMPDIR="${SLURMTMPDIR}" -B /scratch:/scratch \
+apptainer build --build-arg SLURMTMPDIR="${SLURMTMPDIR}" \
+ --build-arg SLURM_NPROCS="${SLURM_NPROCS}" -B /scratch:/scratch \
  OpenFold-$(arch).sif OpenFold-aarch64.def
 ```
 

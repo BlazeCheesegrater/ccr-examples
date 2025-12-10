@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: ubuntu:24.04
+From: nvcr.io/nvidia/pytorch:24.10-py3
 
 %labels
   org.opencontainers.image.authors OpenFold Team
@@ -16,9 +16,11 @@ From: ubuntu:24.04
 
 %arguments
     SLURMTMPDIR=""
+    SLURM_NPROCS=""
 
 %post -c /bin/bash
   export SLURMTMPDIR="{{ SLURMTMPDIR }}"
+  export SLURM_NPROCS="{{ SLURM_NPROCS }}"
 
   # Set the timezone, if unset
   test -h /etc/localtime || ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
@@ -57,8 +59,15 @@ From: ubuntu:24.04
   dpkg-reconfigure --frontend=noninteractive locales
   update-locale LANG=en_US.UTF-8
 
+  # max parallelism for ninja
+  export MAX_JOBS="$(expr ${SLURM_NPROCS:-$(nproc)} - 3)"
+  if [ ${MAX_JOBS} -lt 1 ]xi
+  then
+    MAX_JOBS=1
+  fi
+
   # use all the available cores for cmake parallel builds
-  export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+  export CMAKE_BUILD_PARALLEL_LEVEL="${MAX_JOBS}"
 
   # Following build based on the Dockerfile
 
@@ -91,6 +100,8 @@ From: ubuntu:24.04
   mamba clean --all -y
   # manually install flash-attn with --no-build-isolation
   pip install flash-attn --no-build-isolation
+  # install CUDA TensorFlow
+  pip install 'tensorflow[and-cuda]' tensorrt polygraphy
   cd /root
   git clone https://github.com/aqlaboratory/openfold.git
   cd openfold
@@ -106,6 +117,9 @@ From: ubuntu:24.04
   cd ..
   rm -rf openfold
   cd /opt/openfold
+  # cuda-bindings 13.0.0 introduced a breaking change - cuda.cudart was
+  # replaced by cuda.bindings.runtime
+  sed -E -i '/^[[:space:]]*import[[:space:]]+cuda\.cudart/s/cuda\.cudart/cuda.bindings.runtime/' ./openfold/utils/tensorrt_lazy_compiler.py
   wget -q -P /opt/openfold/openfold/resources \
     https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
   python3 setup.py install

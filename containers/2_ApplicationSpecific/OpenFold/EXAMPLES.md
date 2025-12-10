@@ -30,6 +30,7 @@ Start the container, with the "./output" directory a the top level output
 
 ```
 apptainer shell \
+ --writable-tmpfs \
  -B /projects:/projects,/scratch:/scratch,/util:/util,/vscratch:/vscratch \
  -B /util/software/data/OpenFold:/data \
  -B /util/software/data/alphafold:/database \
@@ -323,6 +324,7 @@ alternate output directory
 
 ```
 apptainer shell \
+ --writable-tmpfs \
  -B /projects:/projects,/scratch:/scratch,/util:/util,/vscratch:/vscratch \
  -B /util/software/data/OpenFold:/data \
  -B /util/software/data/alphafold:/database \

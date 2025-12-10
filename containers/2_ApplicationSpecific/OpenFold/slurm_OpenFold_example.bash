@@ -39,6 +39,7 @@ if [ "${APPTAINER_NAME}" = "" ]
 then
   # Launch the container with this script
   exec apptainer run \
+   --writable-tmpfs \
   -B /projects:/projects,/scratch:/scratch,/util:/util,/vscratch:/vscratch \
   -B /util/software/data/OpenFold:/data \
   -B /util/software/data/alphafold:/database \
