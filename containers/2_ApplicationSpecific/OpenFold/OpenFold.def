@@ -59,14 +59,14 @@ From: nvcr.io/nvidia/pytorch:24.10-py3
   dpkg-reconfigure --frontend=noninteractive locales
   update-locale LANG=en_US.UTF-8
 
-  # max parallelism for ninja
+  # max parallelism - leave cores free for apptainer & its active mounts
   export MAX_JOBS="$(expr ${SLURM_NPROCS:-$(nproc)} - 3)"
-  if [ ${MAX_JOBS} -lt 1 ]xi
+  if [ ${MAX_JOBS} -lt 1 ]
   then
     MAX_JOBS=1
   fi
 
-  # use all the available cores for cmake parallel builds
+  # use all free cores for cmake parallel builds
   export CMAKE_BUILD_PARALLEL_LEVEL="${MAX_JOBS}"
 
   # Following build based on the Dockerfile
@@ -85,7 +85,7 @@ From: nvcr.io/nvidia/pytorch:24.10-py3
   export CONDA_PKGS_DIRS="${TMPDIR}/cache/conda"
   mkdir -p "${CONDA_PKGS_DIRS}"
   export PATH=/opt/conda/bin:$PATH
-  export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
+  export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 
   # set up Miniforge
   miniforge_version="23.3.1-1"
@@ -129,9 +129,10 @@ From: nvcr.io/nvidia/pytorch:24.10-py3
   export CONDA_PREFIX="/opt/conda"
   export CUDA_HOME="${CONDA_PREFIX}"
   export OF_DIR="/opt/openfold"
-  export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:/usr/local/lib:${LD_LIBRARY_PATH}"
-  export PYTHONPATH="${OF_DIR}:/opt/conda/lib/python3.10/site-packages:${PYTHONPATH}"
+  export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:/usr/local/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+  export PYTHONPATH="${OF_DIR}:/opt/conda/lib/python3.10/site-packages${PYTHONPATH:+:${PYTHONPATH}}"
   export PATH="${CONDA_PREFIX}/bin:${PATH}"
+  export PYTHONWARNINGS="ignore::DeprecationWarning,ignore::FutureWarning"
 
 %runscript
   #!/bin/bash
