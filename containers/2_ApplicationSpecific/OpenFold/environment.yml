@@ -21,9 +21,8 @@ dependencies:
   - scipy
   - tqdm
   - typing-extensions
-#  - wandb
   # W&B Automations API is experimental and it is recommend pinning the package
-  # version to 0.23.1 to reduce the risk of disruption
+  # version to reduce the risk of disruption
   - wandb==0.23.1
   - modelcif==0.7
   - awscli

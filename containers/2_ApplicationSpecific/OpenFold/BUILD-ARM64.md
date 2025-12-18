@@ -75,7 +75,7 @@ export APPTAINER_CACHEDIR="${SLURMTMPDIR}"
 
 Build your container
 
-Note: Building the OpenFold container takes about three hours
+Note: Building the OpenFold container takes about ten minutes
 
 ```
 apptainer build --build-arg SLURMTMPDIR="${SLURMTMPDIR}" \
@@ -188,15 +188,6 @@ Note: There may be no output for over half a minute
 Abridged sample output:
 
 > ```
-> [2025-08-22 11:47:24,610] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
->  [WARNING]  async_io requires the dev libaio .so object and headers but these were not found.
->  [WARNING]  async_io: please install the libaio-dev package with apt
->  [WARNING]  If libaio is already installed (perhaps from source), try setting the CFLAGS and LDFLAGS environment variables to where it can be found.
-> /opt/conda/lib/python3.10/site-packages/deepspeed-0.14.5+unknown-py3.10.egg/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed-0.14.5+unknown-py3.10.egg/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
 > usage: train_openfold.py [-h] [--train_mmcif_data_cache_path TRAIN_MMCIF_DATA_CACHE_PATH] [--use_single_seq_mode USE_SINGLE_SEQ_MODE]
 >                          [--distillation_data_dir DISTILLATION_DATA_DIR] [--distillation_alignment_dir DISTILLATION_ALIGNMENT_DIR] [--val_data_dir VAL_DATA_DIR]
 >                          [--val_alignment_dir VAL_ALIGNMENT_DIR] [--val_mmcif_data_cache_path VAL_MMCIF_DATA_CACHE_PATH] [--kalign_binary_path KALIGN_BINARY_PATH]

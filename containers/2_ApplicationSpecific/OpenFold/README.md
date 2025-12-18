@@ -14,8 +14,12 @@ Note: a GPU is NOT needed to build the OpenFold container<br/>
 See CCR docs for more info on [running jobs](https://docs.ccr.buffalo.edu/en/latest/hpc/jobs/#interactive-job-submission)
 
 ```
-salloc --cluster=ub-hpc --partition=debug --qos=debug --account="[SlurmAccountName]" \
- --mem=0 --exclusive --time=01:00:00
+export SBATCH_ACCOUNT="[SlurmAccountName]"
+```
+
+```
+salloc --cluster=ub-hpc --partition=debug --qos=debug --mem=0 --exclusive \
+ --time=01:00:00
 ```
 
 sample outout:
@@ -133,14 +137,9 @@ python3 "${OF_DIR}/train_openfold.py" --help
 Sample output:
 
 > ```
-> [2025-08-18 17:02:46,110] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
->  [WARNING]  async_io requires the dev libaio .so object and headers but these were not found.
->  [WARNING]  async_io: please install the libaio-dev package with apt
->  [WARNING]  If libaio is already installed (perhaps from source), try setting the CFLAGS and LDFLAGS environment variables to where it can be found.
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
+> [2025-12-17 10:25:31,032] [WARNING] [real_accelerator.py:162:get_accelerator] Setting accelerator to CPU. If you have GPU or other accelerator, we were unable to detect it.
+> [2025-12-17 10:25:31,093] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cpu (auto detect)
+> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
 > usage: train_openfold.py [-h] [--train_mmcif_data_cache_path TRAIN_MMCIF_DATA_CACHE_PATH] [--use_single_seq_mode USE_SINGLE_SEQ_MODE]
 >                          [--distillation_data_dir DISTILLATION_DATA_DIR] [--distillation_alignment_dir DISTILLATION_ALIGNMENT_DIR] [--val_data_dir VAL_DATA_DIR]
 >                          [--val_alignment_dir VAL_ALIGNMENT_DIR] [--val_mmcif_data_cache_path VAL_MMCIF_DATA_CACHE_PATH] [--kalign_binary_path KALIGN_BINARY_PATH]

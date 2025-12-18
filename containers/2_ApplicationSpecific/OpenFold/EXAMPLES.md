@@ -8,9 +8,13 @@ Start an interactive job with a GPU e.g.
 NOTE: OpenFold Inference only uses one GPU
 
 ```
+export SBATCH_ACCOUNT="[SlurmAccountName]"
+```
+
+```
 salloc --cluster=ub-hpc --partition=general-compute --qos=general-compute \
- --account="[SlurmAccountName]" --mem=128GB --nodes=1 --cpus-per-task=1 \
- --tasks-per-node=12 --gpus-per-node=1 --time=02:00:00
+ --mem=128GB --nodes=1 --cpus-per-task=1 --tasks-per-node=12 \
+ --gpus-per-node=1 --time=02:00:00
 ```
 
 Change to your OpenFold directory
@@ -25,7 +29,7 @@ Create a top level output directory
 mkdir -p ./output
 ```
 
-Start the container, with the "./output" directory a the top level output
+Start the container, with the "./output" directory as the top level output
  directory "/output" inside the contianer.
 
 ```
@@ -73,10 +77,10 @@ Sample output:
 
 > ```
 > total 1
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 21 15:45 alignments
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 21 15:45 fasta_dir
-> -rwxrwxr-x 1 [CCRusername] nogroup  530 Aug 21 15:45 inference.sh
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 21 15:45 sample_predictions
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:34 alignments
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:34 fasta_dir
+> -rwxrwxr-x 1 [CCRusername] nogroup  530 Dec 17 10:34 inference.sh
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:34 sample_predictions
 > ```
 
 ## Run model inference
@@ -109,19 +113,15 @@ python3 "${OF_DIR}/run_pretrained_openfold.py" \
 Sample output:
 
 > ```
-> [2025-08-25 14:49:35,606] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
+> [2025-12-17 10:36:24,872] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> Warning: The default cache directory for DeepSpeed Triton autotune, /user/[CCRusername]/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
 > INFO:/opt/openfold/openfold/utils/script_utils.py:Successfully loaded JAX parameters at /opt/openfold/openfold/resources/params/params_model_1_ptm.npz...
 > INFO:/opt/openfold/run_pretrained_openfold.py:Using precomputed alignments for 6KWC_1 at ./examples/monomer/alignments...
 > INFO:/opt/openfold/openfold/utils/script_utils.py:Running inference for 6KWC_1...
-> INFO:/opt/openfold/openfold/utils/script_utils.py:Inference time: 56.51587692601606
+> INFO:/opt/openfold/openfold/utils/script_utils.py:Inference time: 19.050397651968524
 > INFO:/opt/openfold/run_pretrained_openfold.py:Output written to /output/PDB_6KWC/pre-computed_alignments/predictions/6KWC_1_model_1_ptm_unrelaxed.pdb...
 > INFO:/opt/openfold/run_pretrained_openfold.py:Running relaxation on /output/PDB_6KWC/pre-computed_alignments/predictions/6KWC_1_model_1_ptm_unrelaxed.pdb...
-> INFO:/opt/openfold/openfold/utils/script_utils.py:Relaxation time: 10.501414217054844
+> INFO:/opt/openfold/openfold/utils/script_utils.py:Relaxation time: 10.55438576999586
 > INFO:/opt/openfold/openfold/utils/script_utils.py:Relaxed output written to /output/PDB_6KWC/pre-computed_alignments/predictions/6KWC_1_model_1_ptm_relaxed.pdb...
 > ```
 
@@ -136,18 +136,18 @@ Sample output:
 > ```
 > /output/PDB_6KWC/pre-computed_alignments:
 > total 1
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 25 14:50 .
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 25 14:49 ..
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 25 14:51 predictions
-> -rw-rw-r-- 1 [CCRusername] nogroup   44 Aug 25 14:50 timings.json
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:37 .
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:36 ..
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:37 predictions
+> -rw-rw-r-- 1 [CCRusername] nogroup   45 Dec 17 10:37 timings.json
 > 
 > /output/PDB_6KWC/pre-computed_alignments/predictions:
-> total 344
-> drwxrwsr-x 2 [CCRusername] nogroup   4096 Aug 25 14:51 .
-> drwxrwsr-x 2 [CCRusername] nogroup   4096 Aug 25 14:50 ..
-> -rw-rw-r-- 1 [CCRusername] nogroup 230149 Aug 25 14:51 6KWC_1_model_1_ptm_relaxed.pdb
-> -rw-rw-r-- 1 [CCRusername] nogroup 120528 Aug 25 14:50 6KWC_1_model_1_ptm_unrelaxed.pdb
-> -rw-rw-r-- 1 [CCRusername] nogroup     34 Aug 25 14:51 timings.json
+> total 341
+> drwxrwsr-x 2 [CCRusername] nogroup   4096 Dec 17 10:37 .
+> drwxrwsr-x 2 [CCRusername] nogroup   4096 Dec 17 10:37 ..
+> -rw-rw-r-- 1 [CCRusername] nogroup 227310 Dec 17 10:37 6KWC_1_model_1_ptm_relaxed.pdb
+> -rw-rw-r-- 1 [CCRusername] nogroup 120528 Dec 17 10:37 6KWC_1_model_1_ptm_unrelaxed.pdb
+> -rw-rw-r-- 1 [CCRusername] nogroup     33 Dec 17 10:37 timings.json
 > ```
 
 
@@ -182,19 +182,15 @@ python3 "${OF_DIR}/run_pretrained_openfold.py" \
 Sample output:
 
 > ```
-> [2025-08-26 09:33:00,593] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
+> [2025-12-17 10:39:12,706] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> Warning: The default cache directory for DeepSpeed Triton autotune, /user/[CCRusername]/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
 > INFO:/opt/openfold/openfold/utils/script_utils.py:Successfully loaded JAX parameters at /opt/openfold/openfold/resources/params/params_model_1_ptm.npz...
 > INFO:/opt/openfold/run_pretrained_openfold.py:Generating alignments for 6KWC_1...
 > INFO:/opt/openfold/openfold/utils/script_utils.py:Running inference for 6KWC_1...
-> INFO:/opt/openfold/openfold/utils/script_utils.py:Inference time: 58.297142078052275
+> INFO:/opt/openfold/openfold/utils/script_utils.py:Inference time: 15.672921338002197
 > INFO:/opt/openfold/run_pretrained_openfold.py:Output written to /output/PDB_6KWC/without_pre-computed_alignments/predictions/6KWC_1_model_1_ptm_unrelaxed.pdb...
 > INFO:/opt/openfold/run_pretrained_openfold.py:Running relaxation on /output/PDB_6KWC/without_pre-computed_alignments/predictions/6KWC_1_model_1_ptm_unrelaxed.pdb...
-> INFO:/opt/openfold/openfold/utils/script_utils.py:Relaxation time: 10.48616563109681
+> INFO:/opt/openfold/openfold/utils/script_utils.py:Relaxation time: 6.940809735970106
 > INFO:/opt/openfold/openfold/utils/script_utils.py:Relaxed output written to /output/PDB_6KWC/without_pre-computed_alignments/predictions/6KWC_1_model_1_ptm_relaxed.pdb...
 > ```
 
@@ -209,34 +205,34 @@ Sample output:
 > ```
 > /output/PDB_6KWC/without_pre-computed_alignments:
 > total 1
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 26 09:52 .
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 26 09:35 ..
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 26 09:33 alignments
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 26 09:53 predictions
-> -rw-rw-r-- 1 [CCRusername] nogroup   45 Aug 26 09:52 timings.json
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 11:24 .
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:39 ..
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:39 alignments
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 11:24 predictions
+> -rw-rw-r-- 1 [CCRusername] nogroup   45 Dec 17 11:24 timings.json
 > 
 > /output/PDB_6KWC/without_pre-computed_alignments/alignments:
 > total 0
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 26 09:33 .
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 26 09:52 ..
-> drwxrwsr-x 2 [CCRusername] nogroup 4096 Aug 26 09:51 6KWC_1
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 10:39 .
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 11:24 ..
+> drwxrwsr-x 2 [CCRusername] nogroup 4096 Dec 17 11:23 6KWC_1
 > 
 > /output/PDB_6KWC/without_pre-computed_alignments/alignments/6KWC_1:
 > total 7028
-> drwxrwsr-x 2 [CCRusername] nogroup    4096 Aug 26 09:51 .
-> drwxrwsr-x 2 [CCRusername] nogroup    4096 Aug 26 09:33 ..
-> -rw-rw-r-- 1 [CCRusername] nogroup  397302 Aug 26 09:51 bfd_uniclust_hits.a3m
-> -rw-rw-r-- 1 [CCRusername] nogroup  136021 Aug 26 09:38 hhsearch_output.hhr
-> -rw-rw-r-- 1 [CCRusername] nogroup 1972569 Aug 26 09:48 mgnify_hits.sto
-> -rw-rw-r-- 1 [CCRusername] nogroup 4689644 Aug 26 09:38 uniref90_hits.sto
+> drwxrwsr-x 2 [CCRusername] nogroup    4096 Dec 17 11:23 .
+> drwxrwsr-x 2 [CCRusername] nogroup    4096 Dec 17 10:39 ..
+> -rw-rw-r-- 1 [CCRusername] nogroup  397302 Dec 17 11:23 bfd_uniclust_hits.a3m
+> -rw-rw-r-- 1 [CCRusername] nogroup  136025 Dec 17 10:55 hhsearch_output.hhr
+> -rw-rw-r-- 1 [CCRusername] nogroup 1972569 Dec 17 11:19 mgnify_hits.sto
+> -rw-rw-r-- 1 [CCRusername] nogroup 4689644 Dec 17 10:54 uniref90_hits.sto
 > 
 > /output/PDB_6KWC/without_pre-computed_alignments/predictions:
-> total 344
-> drwxrwsr-x 2 [CCRusername] nogroup   4096 Aug 26 09:53 .
-> drwxrwsr-x 2 [CCRusername] nogroup   4096 Aug 26 09:52 ..
-> -rw-rw-r-- 1 [CCRusername] nogroup 230149 Aug 26 09:53 6KWC_1_model_1_ptm_relaxed.pdb
-> -rw-rw-r-- 1 [CCRusername] nogroup 120528 Aug 26 09:52 6KWC_1_model_1_ptm_unrelaxed.pdb
-> -rw-rw-r-- 1 [CCRusername] nogroup     33 Aug 26 09:53 timings.json
+> total 341
+> drwxrwsr-x 2 [CCRusername] nogroup   4096 Dec 17 11:24 .
+> drwxrwsr-x 2 [CCRusername] nogroup   4096 Dec 17 11:24 ..
+> -rw-rw-r-- 1 [CCRusername] nogroup 227310 Dec 17 11:24 6KWC_1_model_1_ptm_relaxed.pdb
+> -rw-rw-r-- 1 [CCRusername] nogroup 120528 Dec 17 11:24 6KWC_1_model_1_ptm_unrelaxed.pdb
+> -rw-rw-r-- 1 [CCRusername] nogroup     33 Dec 17 11:24 timings.json
 > ```
 
 
@@ -271,9 +267,12 @@ Note: Other possible options for "run_pretrained_openfold.py"
 Start an interactive job with more than one GPU e.g.
 
 ```
-salloc --cluster=ub-hpc --account="[SlurmAccountName]" \
- --partition=industry-dgx --qos=industry --mem=128GB --nodes=1 \
- --gpus-per-node=8 --mem=0 --exclusive --time=3-00:00:00
+export SBATCH_ACCOUNT="[SlurmAccountName]"
+```
+
+```
+salloc --cluster=ub-hpc --partition=industry-dgx --qos=industry --mem=128GB \
+ --nodes=1 --gpus-per-node=8 --mem=0 --exclusive --time=3-00:00:00
 ```
 
 sample outout:
@@ -381,218 +380,89 @@ python3 "${OF_DIR}/train_openfold.py" \
  "2021-10-10"
 ```
 
-Sample output:
+Sample abridged output:
 
 > ```
-> [2025-08-26 11:53:29,143] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> [2025-12-17 11:56:06,327] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
 > Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> [rank: 0] Seed set to 504588624
+> [rank: 0] Seed set to 1054328241
 > /opt/conda/lib/python3.10/site-packages/lightning_fabric/connector.py:571: `precision=bf16` is supported for historical reasons but its usage is discouraged. Please set your precision to bf16-mixed instead!
 > Using bfloat16 Automatic Mixed Precision (AMP)
 > GPU available: True (cuda), used: True
 > TPU available: False, using: 0 TPU cores
-> HPU available: False, using: 0 HPUs
-> You are using a CUDA device ('NVIDIA H100 80GB HBM3') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
 > Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/8
-> [2025-08-26 11:54:03,699] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 11:54:03,705] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 11:54:03,705] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 11:54:03,706] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 11:54:03,710] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 11:54:03,710] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 11:54:03,715] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> [2025-12-17 11:56:37,498] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> [2025-12-17 11:56:37,528] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> [2025-12-17 11:56:37,538] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> [2025-12-17 11:56:37,541] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> [2025-12-17 11:56:37,542] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> [2025-12-17 11:56:37,544] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+> [2025-12-17 11:56:37,546] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
 > Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
+> [...]
 > Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> [rank: 1] Seed set to 504588624
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> [rank: 2] Seed set to 504588624
-> [rank: 6] Seed set to 504588624
-> [rank: 4] Seed set to 504588624
-> [rank: 7] Seed set to 504588624
-> [rank: 5] Seed set to 504588624
-> [rank: 3] Seed set to 504588624
-> Initializing distributed: GLOBAL_RANK: 4, MEMBER: 5/8
-> Initializing distributed: GLOBAL_RANK: 6, MEMBER: 7/8
-> Initializing distributed: GLOBAL_RANK: 7, MEMBER: 8/8
-> Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/8
-> Initializing distributed: GLOBAL_RANK: 5, MEMBER: 6/8
+> [rank: 2] Seed set to 1054328241
+> [rank: 3] Seed set to 1054328241
+> [rank: 5] Seed set to 1054328241
+> [rank: 7] Seed set to 1054328241
+> [rank: 1] Seed set to 1054328241
+> [rank: 6] Seed set to 1054328241
+> [rank: 4] Seed set to 1054328241
 > Initializing distributed: GLOBAL_RANK: 2, MEMBER: 3/8
 > Initializing distributed: GLOBAL_RANK: 3, MEMBER: 4/8
+> Initializing distributed: GLOBAL_RANK: 4, MEMBER: 5/8
+> Initializing distributed: GLOBAL_RANK: 6, MEMBER: 7/8
+> Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/8
+> Initializing distributed: GLOBAL_RANK: 7, MEMBER: 8/8
+> Initializing distributed: GLOBAL_RANK: 5, MEMBER: 6/8
 > ----------------------------------------------------------------------------------------------------
 > distributed_backend=nccl
 > All distributed processes registered. Starting with 8 processes
 > ----------------------------------------------------------------------------------------------------
 > 
-> LOCAL_RANK: 7 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 3 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 6 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 2 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 4 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 5 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
 > LOCAL_RANK: 1 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+> LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+> LOCAL_RANK: 2 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+> LOCAL_RANK: 3 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+> LOCAL_RANK: 7 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+> LOCAL_RANK: 5 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+> LOCAL_RANK: 6 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+> LOCAL_RANK: 4 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
 > /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
 >   warnings.warn(
 > /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/model_summary/model_summary.py:231: Precision bf16-mixed is not supported by the model summary.  Estimated model size in MB will not be accurate. Using 32 bits instead.
-> 
->   | Name  | Type          | Params | Mode 
-> ------------------------------------------------
-> 0 | model | AlphaFold     | 93.2 M | train
-> 1 | loss  | AlphaFoldLoss | 0      | train
-> ------------------------------------------------
-> 93.2 M    Trainable params
-> 0         Non-trainable params
-> 93.2 M    Total params
-> 372.916   Total estimated model params size (MB)
-> 4451      Modules in train mode
-> 0         Modules in eval mode
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/data.py:106: Total length of `list` across ranks is zero. Please make sure this was your intention.
-> Epoch 0:   0%|                                                                                                                            | 0/1250 [00:00<?, ?it/s]/opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/distogram', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/distogram_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/data.py:79: Trying to infer the `batch_size` from an ambiguous collection. The batch size we found is 1. To avoid any miscalculations, use `self.log(..., batch_size=batch_size)`.
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/experimentally_resolved', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/experimentally_resolved_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/fape', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/fape_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/plddt_loss', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/plddt_loss_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/masked_msa', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/masked_msa_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/supervised_chi', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/supervised_chi_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/violation', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/violation_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/unscaled_loss', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/unscaled_loss_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/loss', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/loss_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/lddt_ca', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/drmsd_ca', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> WARNING:root:The exact sequence TTADIVVFDEISMATNYDLSVVNARLRAKHYVYIGDPAQLPAPRTLLTKGTLEPEYFNSVCRLMKTIGPDMFLGTCRRCPAEIVDTVSALVYDNKLKAHKDKSAQCFKMFYKGVITHDVSSAINRPQIGVVREFLTRNPAWRKAVFISPYNSQNAVASKILGLPTQTVDSSQGSEYDYVIFTQTTETAHSCNVNRFNVAITRAKVGILCIMSDR was not found in 7o7y_BK. Realigning the template to the actual sequence.
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> Epoch 0:   1%|█▎                                                                                             | 17/1250 [01:45<2:07:09,  0.16it/s, train/loss=90.00]
 > [...]
-> Epoch 0: 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1250/1250 [1:31:49<00:00,  0.23it/s, train/loss=55.40]
+>   warnings.warn(
+> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/model_summary/model_summary.py:242: Precision bf16-mixed is not supported by the model summary.  Estimated model size in MB will not be accurate. Using 32 bits instead.
+> ┏━━━┳━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+> ┃   ┃ Name  ┃ Type          ┃ Params ┃ Mode  ┃ FLOPs ┃
+> ┡━━━╇━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+> │ 0 │ model │ AlphaFold     │ 93.2 M │ train │     0 │
+> │ 1 │ loss  │ AlphaFoldLoss │      0 │ train │     0 │
+> └───┴───────┴───────────────┴────────┴───────┴───────┘
+> Trainable params: 93.2 M                                                                                                                                           
+> Non-trainable params: 0                                                                                                                                            
+> Total params: 93.2 M                                                                                                                                               
+> Total estimated model params size (MB): 372                                                                                                                        
+> Modules in train mode: 4451                                                                                                                                        
+> Modules in eval mode: 0                                                                                                                                            
+> Total FLOPs: 0                                                                                                                                                     
+> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/data.py:106: Total length of `list` across ranks is zero. Please make sure this was your intention.
+> Epoch 0/999 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0/1250 0:00:00 • -:--:-- 0.00it/s
+> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+>   return fn(*args, **kwargs)
+> [...]
+> Epoch 0/999 ╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 21/1250 0:02:02 • 1:18:06 0.26it/s train/loss: 143.231
+> [...]
+> Epoch 0/999 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━ 1215/1250 1:27:11 • 0:02:25 0.24it/s train/loss: 53.322
+> [....]
 > ```
 
 Note: This example will fail with an odd "strategy=None" error if run on a
 node with only one GPU
 
-In the above example, I stopped the training after Ephoch 0 which created the
-following checkpoint file:
+In the above example, I stopped the training with <ctrl>c after Ephoch 0 which
+created the following checkpoint file:
 
 ```
 ls -l /output/PDB/2021-10-10/checkpoints
@@ -600,10 +470,11 @@ ls -l /output/PDB/2021-10-10/checkpoints
 
 > ```
 > total 1464717
-> -rw-rw-r-- 1 tkewtest nogroup 1499869690 Aug 26 13:26 /output/PDB/2021-10-10/checkpoints/0-1250.ckpt
+> -rw-rw-r-- 1 tkewtest nogroup 1499870010 Dec 17 13:27 0-1250.ckpt
 > ```
 
-Restarted the training from the checkpoint:
+Restarted the training from the checkpoint, using the checkpoint file
+"/output/PDB/2021-10-10/checkpoints/0-1250.ckpt"
 
 ```
 export TRITON_CACHE_DIR="${SLURMTMPDIR}"
@@ -625,235 +496,84 @@ python3 "${OF_DIR}/train_openfold.py" \
  "2021-10-10"
 ```
 
-Sample output:
+Sample abridged output:
 
 ```
-> [2025-08-26 15:33:33,529] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> [rank: 0] Seed set to 741092476
-> /opt/openfold/train_openfold.py:328: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
->   sd = torch.load(args.resume_from_ckpt)
-> /opt/conda/lib/python3.10/site-packages/lightning_fabric/connector.py:571: `precision=bf16` is supported for historical reasons but its usage is discouraged. Please set your precision to bf16-mixed instead!
-> Using bfloat16 Automatic Mixed Precision (AMP)
-> GPU available: True (cuda), used: True
-> TPU available: False, using: 0 TPU cores
-> HPU available: False, using: 0 HPUs
-> You are using a CUDA device ('NVIDIA H100 80GB HBM3') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
-> Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/8
-> [2025-08-26 15:33:57,402] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 15:33:57,418] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 15:33:57,426] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 15:33:57,431] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 15:33:57,443] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 15:33:57,445] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> [2025-08-26 15:33:57,448] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> [rank: 2] Seed set to 741092476
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:49: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
->   def forward(ctx, input, weight, bias=None):
-> /opt/conda/lib/python3.10/site-packages/deepspeed/runtime/zero/linear.py:67: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
->   def backward(ctx, grad_output):
-> [rank: 3] Seed set to 741092476
-> [rank: 1] Seed set to 741092476
-> [rank: 5] Seed set to 741092476
-> [rank: 4] Seed set to 741092476
-> [rank: 6] Seed set to 741092476
-> [rank: 7] Seed set to 741092476
-> /opt/openfold/train_openfold.py:328: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
->   sd = torch.load(args.resume_from_ckpt)
-> /opt/openfold/train_openfold.py:328: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
->   sd = torch.load(args.resume_from_ckpt)
-> /opt/openfold/train_openfold.py:328: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
->   sd = torch.load(args.resume_from_ckpt)
-> Initializing distributed: GLOBAL_RANK: 2, MEMBER: 3/8
-> /opt/openfold/train_openfold.py:328: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
->   sd = torch.load(args.resume_from_ckpt)
-> /opt/openfold/train_openfold.py:328: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
->   sd = torch.load(args.resume_from_ckpt)
-> /opt/openfold/train_openfold.py:328: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
->   sd = torch.load(args.resume_from_ckpt)
-> /opt/openfold/train_openfold.py:328: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
->   sd = torch.load(args.resume_from_ckpt)
-> Initializing distributed: GLOBAL_RANK: 3, MEMBER: 4/8
-> Initializing distributed: GLOBAL_RANK: 7, MEMBER: 8/8
-> Initializing distributed: GLOBAL_RANK: 4, MEMBER: 5/8
-> Initializing distributed: GLOBAL_RANK: 6, MEMBER: 7/8
-> Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/8
-> Initializing distributed: GLOBAL_RANK: 5, MEMBER: 6/8
-> ----------------------------------------------------------------------------------------------------
-> distributed_backend=nccl
-> All distributed processes registered. Starting with 8 processes
-> ----------------------------------------------------------------------------------------------------
-> 
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:701: Checkpoint directory /output/PDB/2021-10-10/checkpoints exists and is not empty.
-> Restoring states from the checkpoint path at /output/PDB/2021-10-10/checkpoints/0-1250.ckpt
-> LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 1 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 6 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 7 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 2 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 3 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 5 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> LOCAL_RANK: 4 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/model_summary/model_summary.py:231: Precision bf16-mixed is not supported by the model summary.  Estimated model size in MB will not be accurate. Using 32 bits instead.
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> /opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
->   warnings.warn(
-> 
->   | Name  | Type          | Params | Mode 
-> ------------------------------------------------
-> 0 | model | AlphaFold     | 93.2 M | train
-> 1 | loss  | AlphaFoldLoss | 0      | train
-> ------------------------------------------------
-> 93.2 M    Trainable params
-> 0         Non-trainable params
-> 93.2 M    Total params
-> 372.916   Total estimated model params size (MB)
-> 4451      Modules in train mode
-> 0         Modules in eval mode
-> Restored all states from the checkpoint at /output/PDB/2021-10-10/checkpoints/0-1250.ckpt
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/data.py:106: Total length of `list` across ranks is zero. Please make sure this was your intention.
-> Training: |                                                                                                                                  | 0/? [00:00<?, ?it/s]WARNING:root:The exact sequence LDARLDTVYDAIVLGGGMGGLSAAIYLARYGLKCLVVEKGRGRSFWMQDLRNYVGLDPDTPGRDIITHSTQQALHWGADLLRGYVEDVTDEGDTLAVKVKVGKKDSLYPIFRTKYVIAATGIIDNLPQLEDMQNVYDYAGYTLHVCMICDGFDMWDQKAVLIAGTEGQINAAFVLNWFTPYITVLTHGLCTVGDEMKAKLADHGYPLHEAAITKFLGEDHKMSGVELVDGTVMEATTGLINMGSVYHNHYLKGIEGLEWDGENLVTNDMAQTSHPRIFALGDLKKGLNQVSVAVADGTLAATQIWRNIRRASEPRK was not found in 5k0a_D. Realigning the template to the actual sequence.
-> WARNING:root:The exact sequence ATLREQSFDEAWLFHRGDIAEGEKQSLDDSQWRQINLPHDWSIEDIPGTNSPFTADAATEVAGGFTVGGTGWYRKHFYIDAAEKGKAIAVSFDGIYMNADIWVNDRHVANHVYGYTAFELDITDYVRFGAENLIAVRVKNEGMNCRWYTGSGIYRHTFLKITNPLHFETWGTFVTTPVATADKAEVHVQSVLANTEKVTGKVILETRIVDKNNHTVARKEQLVTLDNKEKTEVGHALEVLAPQLWSIDNPYLYQVVNRLLQDDKVIDEEYISIGIRNIAFSAENGFQLNGKSMKLKGGCIHHDNGLLGAKAFDRAEERKIELLKAAGFNALRLSHNPPSIALLNACDRLGMLVIDEAFDMWRYGHYQYDYAQYFDKLWKEDLHSMVARDRNHPSVIMWSIGNEIKNKETAEIVDICRELTGFVKTLDTTRPVTAGVNSIVDATDDFLAPLDVCGYNYALNRYESDAKRHPDRIIYASESYASQAYDYWKGVEDHSWVIGDFIWTAFDYIGEASIGWCGYPLDKRIFPWNHANCGDLNLSGERRPQSYLRETLWSDAPVSHIVVTPPVPSFPLNPDKADWSVWDFPDVVDHWNFPGYEGKKMTVSVYSNCEQVELFLNGESLGKQENTADKKNTLVWEVPYAHGILKAVSYNKGGEVGTATLESAGKVEKIRLSADRTEIVADGNDLSYITLELVDSKGIRNQLAEELVAFSIEGDATIEGVGNANPMSIESFVANSRKTWRGSNLLVVRSGKSSGRIIVTAKVKALPVASITIT was not found in 6b6l_B. Realigning the template to the actual sequence.
-> WARNING:root:The exact sequence VRKRVLIGLKDAPNFVMRLFTVEPGGLIDRASHPWEHEIFVLKGKLTVLKEQGEETVEEGFYIFVEPNEIHGFRNDTDSEVEFLA was not found in 6l2e_B. Realigning the template to the actual sequence.
-> WARNING:root:The exact sequence MVILEVANPQEAARVLNENLLVGYFLPCKLVVYQENGTTKIGMPK was not found in 1q9u_B. Realigning the template to the actual sequence.
-> WARNING:root:The exact sequence GRLGVTRNKIMTAQYECYQKIMQDPIQQAEGVYCQRTWDGWLCWNDVAAGTESMQLCPDYFQDFDPSEKVTKICDQDGNWFRHPASQRTWTNYTQCNVNT was not found in 6zho_A. Realigning the template to the actual sequence.
-> WARNING:root:The exact sequence SSVPMTQNRNILWIMCDQLRFDYLSCYGHERLNTPNIDKLAKRGVRFTNAYVQATVXGPSRMSAYTGRYVRSHGSTQNGIPLRVGEPTLGDHLRDVGMRNVLIGKTHMRPDLDGMKRLGIDPDSEIGARVGEGGFDAFDRDDGVHPTGYRKKEPAYNDYLRHAGFQAENPWEFWANSAEGKGGENQSGWLLTHADKPARVPEEHSETAYMTRRAMEFMEAAEKDGRPWCAHLSYIKPHWPYIVPAPYHDMFGPDDVKPAVRSDEELKAAHPLFKAMTEEVYSRNFARDEVREKVIPAYMGLIKQIDDQLGQLFAFMQERGLDENTMIVFTADHGDYLGDHWMGEKYLFYEAAAKVPLIIYDPSDKADATRGTVSDALVEMIDLAPTFVDYAGGVPPMHILEGKSLLPLLHDDDSSWDRQYVFSELDYSNLPARLKLGRDIQDCRATMVFDGRYKLVEVMGFAPILFDLEVDPDELKDLGRDPSAEEVRQRLTSALDAWHRNTRQR was not found in 4upi_A. Realigning the template to the actual sequence.
-> WARNING:root:The exact sequence PRGSHMASIKKPNVLILLFDDMRFDTFSYRNGPVSTPNIDALANEGTRFDQAMTSTGLASPSRAAMFTGRWGHKTGLDDNVGLYHSRLSELSLSEGSVIKRATSIGYDVSYVGKWHLGAQGPALRGANFMWGHDKDEERNGRPFTPYQTQKNVARMNAGERDKNGEKHDYYKTLPGTYADTVTAKEVNEGKLMLQNAAKSDKPFFGIVSFEQPHPPYRVPEPYASMYDYKDIKLPKNFGIKRKHKPMAQDDIWWPWHDVSHMSETDWRKAHSFYYGAIAMIDHAVGELINTAKEEGLYDDLHIILVGDQGSMLGEHNLYDKGPYAYDELMRMPLIIRDPSLEPKIINRQVSMLDIAPTLRQWMTLPLDGDEDGRSLLPLMKQGDSADAGKDDISLYAYEWYNGGWFGIRAIRTPEMKFVWNPGDSRDELYDLKNDPYEITNQIDNPKYKKQLTDLVHKMAGELNRIDDPSLTKF was not found in 6pt4_B. Realigning the template to the actual sequence.
-> Epoch 1:   0%|                                                                                                                            | 0/1250 [00:00<?, ?it/s]/opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/distogram', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/distogram_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/data.py:79: Trying to infer the `batch_size` from an ambiguous collection. The batch size we found is 1. To avoid any miscalculations, use `self.log(..., batch_size=batch_size)`.
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/experimentally_resolved', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/experimentally_resolved_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/fape', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/fape_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/plddt_loss', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/plddt_loss_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/masked_msa', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/masked_msa_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/supervised_chi', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/supervised_chi_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/violation', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/violation_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/unscaled_loss', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/unscaled_loss_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/loss', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/loss_epoch', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/lddt_ca', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:520: You called `self.log('train/drmsd_ca', ..., logger=True)` but have no logger configured. You can enable one by doing `Trainer(logger=ALogger(...))`
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:202: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/openfold/openfold/model/primitives.py:226: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> /opt/conda/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
->   return fn(*args, **kwargs)
-> /opt/openfold/openfold/model/primitives.py:258: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
->   with torch.cuda.amp.autocast(enabled=False):
-> Epoch 1:   2%|█▌                                                                                             | 21/1250 [01:56<1:53:48,  0.18it/s, train/loss=50.10]
-> [...]
+[2025-12-17 14:13:31,823] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
+[rank: 0] Seed set to 743491233
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/connector.py:571: `precision=bf16` is supported for historical reasons but its usage is discouraged. Please set your precision to bf16-mixed instead!
+Using bfloat16 Automatic Mixed Precision (AMP)
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/8
+[2025-12-17 14:14:00,153] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
+[2025-12-17 14:14:00,563] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-12-17 14:14:00,570] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-12-17 14:14:00,572] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-12-17 14:14:00,578] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-12-17 14:14:00,588] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-12-17 14:14:00,591] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
+[...]
+Warning: The default cache directory for DeepSpeed Triton autotune, /user/tkewtest/.triton/autotune, appears to be on an NFS system. While this is generally acceptable, if you experience slowdowns or hanging when DeepSpeed exits, it is recommended to set the TRITON_CACHE_DIR environment variable to a non-NFS path.
+[rank: 4] Seed set to 743491233
+[rank: 5] Seed set to 743491233
+[rank: 7] Seed set to 743491233
+[rank: 3] Seed set to 743491233
+[rank: 6] Seed set to 743491233
+[rank: 1] Seed set to 743491233
+[rank: 2] Seed set to 743491233
+Initializing distributed: GLOBAL_RANK: 4, MEMBER: 5/8
+Initializing distributed: GLOBAL_RANK: 7, MEMBER: 8/8
+Initializing distributed: GLOBAL_RANK: 6, MEMBER: 7/8
+Initializing distributed: GLOBAL_RANK: 2, MEMBER: 3/8
+Initializing distributed: GLOBAL_RANK: 5, MEMBER: 6/8
+Initializing distributed: GLOBAL_RANK: 3, MEMBER: 4/8
+Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/8
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 8 processes
+----------------------------------------------------------------------------------------------------
+
+/opt/conda/lib/python3.10/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:881: Checkpoint directory /output/PDB/2021-10-10/checkpoints exists and is not empty.
+Restoring states from the checkpoint path at /output/PDB/2021-10-10/checkpoints/0-1250.ckpt
+LOCAL_RANK: 4 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+LOCAL_RANK: 1 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+LOCAL_RANK: 7 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+LOCAL_RANK: 3 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+LOCAL_RANK: 5 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+LOCAL_RANK: 2 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+LOCAL_RANK: 6 - CUDA_VISIBLE_DEVICES: [0,1,2,3,4,5,6,7]
+/opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+/opt/conda/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:62: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+[...]
+  warnings.warn(
+/opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/model_summary/model_summary.py:242: Precision bf16-mixed is not supported by the model summary.  Estimated model size in MB will not be accurate. Using 32 bits instead.
+┏━━━┳━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃   ┃ Name  ┃ Type          ┃ Params ┃ Mode  ┃ FLOPs ┃
+┡━━━╇━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│ 0 │ model │ AlphaFold     │ 93.2 M │ train │     0 │
+│ 1 │ loss  │ AlphaFoldLoss │      0 │ train │     0 │
+└───┴───────┴───────────────┴────────┴───────┴───────┘
+Trainable params: 93.2 M                                                                                                                                           
+Non-trainable params: 0                                                                                                                                            
+Total params: 93.2 M                                                                                                                                               
+Total estimated model params size (MB): 372                                                                                                                        
+Modules in train mode: 4451                                                                                                                                        
+Modules in eval mode: 0                                                                                                                                            
+Total FLOPs: 0                                                                                                                                                     
+Restored all states from the checkpoint at /output/PDB/2021-10-10/checkpoints/0-1250.ckpt
+/opt/conda/lib/python3.10/site-packages/pytorch_lightning/utilities/data.py:106: Total length of `list` across ranks is zero. Please make sure this was your intention.
+WARNING:root:The exact sequence HPETTPTMLTAPIDSGFLKDPVITPEGFVYNKSSILKWLETKKEDPQSRKPLTAKDLQPFPELLIIVNRFVET was not found in 4wz0_A. Realigning the template to the actual sequence.
+WARNING:root:The exact sequence LPYSLTSDNCEHFVNHLRY was not found in 4dpz_X. Realigning the template to the actual sequence.
+Epoch 1/999 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0/1250 0:00:00 • -:--:-- 0.00it/s
+[...]
+Epoch 1/999 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7/1250 0:01:13 • 1:28:29 0.23it/s train/loss: 49.389
+[...]
 ```
 
 You can monitor the GPU utilization which running the training as following,
