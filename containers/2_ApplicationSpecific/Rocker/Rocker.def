@@ -6,17 +6,14 @@ From: rocker/tidyverse:latest
     Version v1.0
 
 %post
-    ## Install required Linux packages
+    ## Install dependencies and packages for your specific use case here.
     apt-get update && apt-get install -y \
-        
-        ## Insert dependencies and packages for your specific use case here.
-
         && apt-get clean
 
     ## Install packages in R (from CRAN)
     ## Rscript -e "install.packages(c('[packages]'))"
 
-    ## Optional: Install packages from other maintainers in R
+    ## Install packages from other maintainers in R
     ## Rscript -e "[PackageManager]::install(c('[packages]'))"
     
     print(R.version.string)
