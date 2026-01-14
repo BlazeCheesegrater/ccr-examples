@@ -152,23 +152,7 @@ To save the file, type `ctrl + x`, then `y`, then hit the `enter` key.
 
 4. Test the container
 
-Request a job allocation from a login node
-```
-salloc --cluster=ub-hpc --partition=debug --qos=debug --exclusive --mem=8GB --time=00:30:00
-```
-
-Sample output
-```
-salloc: Pending job allocation [JobID]
-salloc: job [JobID] queued and waiting for resources
-salloc: job [JobID] has been allocated resources
-salloc: Granted job allocation [JobID]
-salloc: Waiting for resource configuration
-salloc: Nodes [NodeID] are ready for job
-```
-
-Run the container
-
+Ensure you are on a compute node. Run the container with:
 ```
 apptainer shell rocker-x86_64.sif
 ```
