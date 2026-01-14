@@ -16,8 +16,6 @@ From: rocker/tidyverse:latest
     ## Install packages from other maintainers in R
     ## Rscript -e "[PackageManager]::install(c('[packages]'))"
     
-    print(R.version.string)
-
 %environment
     export R_LIBS_USER=/usr/local/lib/R/site-library
     export PATH=/usr/local/bin:$PATH
