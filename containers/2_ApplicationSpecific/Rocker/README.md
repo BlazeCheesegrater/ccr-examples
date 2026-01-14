@@ -255,3 +255,8 @@ there was an issue with the installation. Otherwise, everything is working as it
 See CCR docs for more info on [Building Images with Apptainer](https://docs.ccr.buffalo.edu/en/latest/howto/containerization/#building-images-with-apptainer)
 
 See R-project docs for more info on [Installing R Packages](https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installing-packages)
+
+## Additional Information
+
+- The [Placeholders](../../../README.md#placeholders) section lists the available options for each placeholder used in the example scripts.
+- For more info on accessing shared project and global scratch directories, resource options, and other important container topics, please refer to the CCR [container documentation](https://docs.ccr.buffalo.edu/en/latest/howto/containerization/) 
