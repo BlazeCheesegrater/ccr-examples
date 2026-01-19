@@ -16,7 +16,7 @@ curl -L -o Rocker.def https://raw.githubusercontent.com/BlazeCheesegrater/ccr-ex
 
 Once ready, build the container:
 ```
-apptainer build rocker-$(arch).sif rocker.def
+apptainer build Rocker-$(arch).sif Rocker.def
 ```
 Sample output:
 ```
@@ -27,7 +27,7 @@ INFO:    Fetching OCI image...
 ..............
 INFO:    Creating SIF file...
 [===============================================================] 100 % 0s
-INFO:    Build complete: rocker.sif
+INFO:    Build complete: Rocker.sif
 ```
 
 ## Run the container
@@ -39,7 +39,7 @@ Ensure you are on a compute node and that you have copied the Rocker.def file to
 
 Run the container:
 ```
-apptainer run rocker-x86_64.sif
+apptainer run Rocker-x86_64.sif
 ```
 You should see:
 ```
@@ -116,7 +116,7 @@ To save the file, type `ctrl + x`, then `y`, then hit the `enter` key.
 
 Ensure you are on a compute node. Run the container with:
 ```
-apptainer shell rocker-x86_64.sif
+apptainer shell Rocker-x86_64.sif
 ```
 
 You should see this
