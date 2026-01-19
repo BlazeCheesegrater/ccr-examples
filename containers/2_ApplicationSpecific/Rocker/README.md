@@ -112,6 +112,15 @@ Rscript -e "BiocManager::install(c('BiocGenerics'))"
 
 To save the file, type `ctrl + x`, then `y`, then hit the `enter` key.
 
+Once ready, build the container:
+```
+apptainer build Rocker-$(arch).sif Rocker.def
+```
+
+> [!NOTE]
+> It will say `Build target 'Rocker2-x86_64.sif' already exists and will be deleted during the build process. Do you want to continue? [y/N]`
+> If you would like to keep the original container, name the `.sif` output to something else.
+
 4. Test the container
 
 Ensure you are on a compute node. Run the container with:
