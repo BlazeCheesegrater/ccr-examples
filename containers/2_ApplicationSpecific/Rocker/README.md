@@ -118,7 +118,7 @@ apptainer build Rocker-$(arch).sif Rocker.def
 ```
 
 > [!NOTE]
-> It will say `Build target 'Rocker2-x86_64.sif' already exists and will be deleted during the build process. Do you want to continue? [y/N]`
+> It will say `Build target 'Rocker-x86_64.sif' already exists and will be deleted during the build process. Do you want to continue? [y/N]`
 > If you would like to keep the original container, name the `.sif` output to something else. Otherwise, you can type `y`.
 
 4. Test the container
