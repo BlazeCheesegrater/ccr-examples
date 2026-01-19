@@ -14,7 +14,7 @@ Download the Rocker build file, `Rocker.def` to this directory.
 curl -L -o Rocker.def https://raw.githubusercontent.com/BlazeCheesegrater/ccr-examples/refs/heads/main/containers/2_ApplicationSpecific/Rocker/Rocker.def
 ```
 
-3. Build the container
+Once ready, build the container:
 ```
 apptainer build rocker-$(arch).sif rocker.def
 ```
