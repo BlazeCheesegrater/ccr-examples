@@ -32,27 +32,12 @@ INFO:    Build complete: rocker.sif
 
 ## Run the container
 
-1. Start an interactive job
-
 > [!NOTE]
 > It may be necessary to change the requested resources based on the R program you want to run. For this example, we will be using minimal resources to check if our container runs. See CCR docs for more info on [submitting an interactive job](https://docs.ccr.buffalo.edu/en/latest/hpc/jobs/#interactive-job-submission).
 
-Request a job allocation from a login node:
-```
-salloc --cluster=ub-hpc --partition=debug --qos=debug --exclusive --mem=8GB --time=00:30:00
-```
+Ensure you are on a compute node and that you have copied the Rocker.def file to your build directory.
 
-Sample output:
-```
-salloc: Pending job allocation [JobID]
-salloc: job [JobID] queued and waiting for resources
-salloc: job [JobID] has been allocated resources
-salloc: Granted job allocation [JobID]
-salloc: Waiting for resource configuration
-salloc: Nodes [NodeID] are ready for job
-```
-
-2. Run the container:
+Run the container:
 ```
 apptainer run rocker-x86_64.sif
 ```
