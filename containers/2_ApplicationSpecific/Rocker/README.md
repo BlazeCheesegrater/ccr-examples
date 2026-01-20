@@ -1,20 +1,42 @@
 # Example Rocker Container
 
 ## Building the container
-The build process follows the same steps detailed in the [introductory container example](../../0_Introductory/README.md#pulling-the-container), which you can use as a guide. Please refer to CCR's [container documentation](https://docs.ccr.buffalo.edu/en/latest/howto/containerization/) for more information on using Apptainer.
+Please refer to CCR's [container documentation](https://docs.ccr.buffalo.edu/en/latest/howto/containerization/) for more detailed information on building and using Apptainer.
 
-On a compute node, navigate to your build directory and use the Slurm job local temporary directory for cache:
+A brief guide to building an Rocker container for CCR's HPC follows:
+
+1. Start an interactive job
+
+> [!NOTE]
+> Apptainer is not available on the CCR login nodes and the compile nodes may not provide enough resources for you to build a container. We recommend requesting an interactive job on a compute node to conduct this build process. 
+> See CCR docs for more info on [submitting an interactive job](https://docs.ccr.buffalo.edu/en/latest/hpc/jobs/#interactive-job-submission).
+
+Request a job allocation from a login node:
+```
+salloc --cluster=ub-hpc --partition=debug --qos=debug --exclusive --mem=8GB --time=00:30:00
+```
+Sample output:
+```
+salloc: Pending job allocation [JobID]
+salloc: job [JobID] queued and waiting for resources
+salloc: job [JobID] has been allocated resources
+salloc: Granted job allocation [JobID]
+salloc: Waiting for resource configuration
+salloc: Nodes [NodeID] are ready for job
+```
+
+2. Navigate to your build directory and use the Slurm job local temporary directory for cache.
 ```
 cd /projects/academic/[YourGroupName]/[CCRusername]/Rocker
 export APPTAINER_CACHEDIR="${SLURMTMPDIR}"
 ```
 
-Download the Rocker build file, `Rocker.def` to this directory.
+3. Download the Rocker build file, `Rocker.def` to this directory.
 ```
 curl -L -o Rocker.def https://raw.githubusercontent.com/BlazeCheesegrater/ccr-examples/refs/heads/main/containers/2_ApplicationSpecific/Rocker/Rocker.def
 ```
 
-Once ready, build the container:
+4. Once ready, build the container:
 ```
 apptainer build Rocker-$(arch).sif Rocker.def
 ```
