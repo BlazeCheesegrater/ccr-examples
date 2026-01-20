@@ -57,7 +57,7 @@ INFO:    Build complete: Rocker.sif
 > [!NOTE]
 > It may be necessary to change the requested resources based on the R program you want to run. For this example, we will be using minimal resources to check if our container runs. See CCR docs for more info on [submitting an interactive job](https://docs.ccr.buffalo.edu/en/latest/hpc/jobs/#interactive-job-submission).
 
-Ensure you are on a compute node and that you have copied the Rocker.def file to your build directory.
+Ensure you are on a compute node before running the container.
 
 Run the container:
 ```
