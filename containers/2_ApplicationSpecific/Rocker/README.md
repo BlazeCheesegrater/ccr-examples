@@ -95,7 +95,7 @@ To edit the definition file, we are going to add a package from apt (a Linux pac
 1. Navigate to your build directory.
 
 ```
-cd /projects/academic/[CCRUsername]/Rocker
+cd /projects/academic/[YourGroupName]/[CCRUsername]/Rocker
 ```
 
 2. Add a Linux package to the definition file
