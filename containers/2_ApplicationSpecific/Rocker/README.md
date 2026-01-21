@@ -100,13 +100,9 @@ cd /projects/academic/[YourGroupName]/[CCRUsername]/Rocker
 
 2. Add a Linux package to the definition file
 
-We are going to add `neofetch` to the definition file first. This is a small program that shows useful information about the operating system. We can do this by using the simple text editor, `nano`.
+We are going to add `neofetch` to the definition file first. This is a small program that shows useful information about the operating system.
 
-Open the file with `nano`
-
-```
-nano Rocker.def
-```
+Open the file with your preferred text editor.
 
 Add `neofetch \` on a new line between `apt-get update && apt-get install -y \` and `&& apt-get clean`. It should look like
 
@@ -132,7 +128,7 @@ To install `BiocGenerics` we need to use the `Bioconductor` package manager. To 
 Rscript -e "BiocManager::install(c('BiocGenerics'))"
 ```
 
-To save the file, type `ctrl + x`, then `y`, then hit the `enter` key.
+Save the edited file.
 
 Once ready, build the container:
 ```
