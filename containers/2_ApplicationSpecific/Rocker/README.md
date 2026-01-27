@@ -98,21 +98,7 @@ To edit the definition file, we are going to add a package from apt (a Linux pac
 cd /projects/academic/[YourGroupName]/[CCRUsername]/Rocker
 ```
 
-2. Add a Linux package to the definition file
-
-We are going to add `neofetch` to the definition file first. This is a small program that shows useful information about the operating system.
-
-Open the file with your preferred text editor.
-
-Add `neofetch \` on a new line between `apt-get update && apt-get install -y \` and `&& apt-get clean`. It should look like
-
-```
-apt-get update && apt-get install -y \
-    neofetch \
-    && apt-get clean
-```
-
-3. Add R packages to the definition file
+2. Add R packages to the definition file
 
 We are going to add `rmarkdown` and `BiocGenerics` to our definition file. These are R files from two different package managers, so we will have to install them with their respective package managers. To do this, we will first uncomment `## Rscript -e "install.packages(c('[packages]'))"` and replace `[packages]` with `rmarkdown`. It should look like
 
@@ -139,7 +125,7 @@ apptainer build Rocker-$(arch).sif Rocker.def
 > If you have already built the container previously, the output will say `Build target 'Rocker-x86_64.sif' already exists and will be deleted during the build process. Do you want to continue? [y/N]`
 > If you would like to keep the original container, name the `.sif` output to something else. Otherwise, you can type `y`.
 
-4. Test the container
+3. Test the container
 
 Ensure you are on a compute node in the same directory as your new .sif file. Run the container with:
 ```
@@ -149,36 +135,6 @@ apptainer shell Rocker-x86_64.sif
 You should see this
 ```
 Apptainer>
-```
-
-Now we want to run the Linux program
-
-```
-neofetch
-```
-
-You should see something like
-```
-            .-/+oossssoo+/-.               [CCRUsername]@[NodeID].core.ccr.buffalo.edu 
-        `:+ssssssssssssssssss+:`           ---------------------------------------- 
-      -+ssssssssssssssssssyyssss+-         OS: Ubuntu 24.04.3 LTS x86_64 
-    .ossssssssssssssssssdMMMNysssso.       Host: PowerEdge R660xs 
-   /ssssssssssshdmmNNmmyNMMMMhssssss/      Kernel: 6.8.0-87-generic 
-  +ssssssssshmydMMMMMMMNddddyssssssss+     Uptime: 29 days, 42 mins 
- /sssssssshNMMMyhhyyyyhmNMMMNhssssssss/    Packages: 516 (dpkg) 
-.ssssssssdMMMNhsssssssssshNMMMdssssssss.   Shell: bash 5.2.21 
-+sssshhhyNMMNyssssssssssssyNMMMysssssss+   Resolution: 1024x768 
-ossyNMMMNyMMhsssssssssssssshmmmhssssssso   Terminal: /dev/pts/40 
-ossyNMMMNyMMhsssssssssssssshmmmhssssssso   CPU: Intel Xeon Gold 6448Y (64) @ 4.100GHz 
-+sssshhhyNMMNyssssssssssssyNMMMysssssss+   GPU: 03:00.0 Matrox Electronics Systems Ltd. Integrated Matrox G200eW3 Graphics Controller 
-.ssssssssdMMMNhsssssssssshNMMMdssssssss.   Memory: 56281MiB / 515478MiB 
- /sssssssshNMMMyhhyyyyhdNMMMNhssssssss/
-  +sssssssssdmydMMMMMMMMddddyssssssss+                             
-   /ssssssssssshdmNNNNmyNMMMMhssssss/                              
-    .ossssssssssssssssssdMMMNysssso.
-      -+sssssssssssssssssyyyssss+-
-        `:+ssssssssssssssssss+:`
-            .-/+oossssoo+/-.
 ```
 
 Now we will run R
