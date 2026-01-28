@@ -90,7 +90,10 @@ Type 'q()' to quit R.
 
 ## Editing the definition file
 
-To edit the definition file, we are going to add a package from apt (a Linux package manager), CRAN (a general R package manager), and BioConductor (a more specific use case R package manager).
+This section is for users who need more than just the basic version of R. Lots of programs that run in R depend on other packages. The easiest way to install these packages to the contianer is through editing the definition file to include them.  To edit the definition file, we are going to add a package from CRAN (a general R package manager) and BioConductor (a more specific use case R package manager). 
+
+> [!NOTE]
+> Some use cases will also reuqire Linux packages to be installed. An example container that demonstrates how to do so can be found [here](../seurat/seurat.def). This is also a good example of what a real use case Rocker definition file should look like.
 
 1. Navigate to your build directory.
 
