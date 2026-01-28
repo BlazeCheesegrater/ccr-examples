@@ -25,18 +25,13 @@ salloc: Waiting for resource configuration
 salloc: Nodes [NodeID] are ready for job
 ```
 
-2. Navigate to your build directory and use the Slurm job local temporary directory for cache.
+2. Navigate to your build directory and use the Slurm job local temporary directory for cache. Ensure `Rocker.def` is in your build directory. Instructions on cloning the example repository can be found [here](/README.md).
 ```
 cd /projects/academic/[YourGroupName]/[CCRusername]/Rocker
 export APPTAINER_CACHEDIR="${SLURMTMPDIR}"
 ```
 
-3. Download the Rocker build file, `Rocker.def` to this directory.
-```
-curl -L -o Rocker.def https://raw.githubusercontent.com/BlazeCheesegrater/ccr-examples/refs/heads/main/containers/2_ApplicationSpecific/Rocker/Rocker.def
-```
-
-4. Once ready, build the container:
+3. Once ready, build the container:
 ```
 apptainer build Rocker-$(arch).sif Rocker.def
 ```
