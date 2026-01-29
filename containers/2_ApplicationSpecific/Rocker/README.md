@@ -31,7 +31,7 @@ cd /projects/academic/[YourGroupName]/[CCRusername]/Rocker
 export APPTAINER_CACHEDIR="${SLURMTMPDIR}"
 ```
 
-3. Once ready, build the container:
+3. Once ready, build the container (This should take about 3 minutes):
 ```
 apptainer build Rocker-$(arch).sif Rocker.def
 ```
